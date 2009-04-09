@@ -1,0 +1,54 @@
+<html>
+  <head>
+    <script type="application/javascript;version=1.8" src="numbers.js"></script>
+    <script type="application/javascript;version=1.8">
+        function init() {
+            var url = document.location.href;
+            if (url.indexOf("?") > 0) {
+                let params = url.split("?")[1].split("&");
+
+                for (i = 0; i < params.length; ++i) {
+                    let name = params[i].split("=")[0]
+                    let value = params[i].split("=")[1]
+
+                    if (name == "num") {
+                        $("num").value = value;
+                    } else if (name == "sz") {
+                        $("sz").value = value;
+                    }
+                }
+                renderNumber($('num').value, $('sz').value, 'output');
+            }
+        }
+    </script>
+  </head>
+  <body onload="init()">
+    <form>
+      <table>
+        <tr>
+          <td>Number:</td>
+          <td><input type="text" id="num" value="01234" /></td>
+        </tr>
+        <tr>
+          <td>Size:</td>
+          <td><input type="text" id="sz" value="2" /></td>
+        </tr>
+        <tr>
+          <td colspan="2">
+            <input type="button" value="Render Number" 
+              onclick="renderNumber($('num').value, $('sz').value, 'output')" /></td>
+        </tr>
+        <tr>
+          <td colspan="2">
+            <input type="button" value="Render Number - Hollywood Style" 
+              onclick="renderNumberHollywood($('num').value, $('sz').value, 'output')" /></td>
+        </tr>
+      </table>
+    </form>
+  </body>
+
+  <hr />
+  Output:
+  <hr />
+  <pre><div id="output"></div></pre>
+</html>
