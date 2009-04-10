@@ -42,6 +42,7 @@ void removeLink(Link**, Link*);
 Link* createLink(Link*, Link*, char*);
 
 void addWord(char*);
+void removeWord(char*);
 
 #ifdef DEBUG
 void printWords(Link*);
@@ -78,6 +79,10 @@ int main(int argc, char **argv) {
     word_sz = strlen(start_word);
     word_list = readDictFile(filename, word_sz);
 
+    #ifdef DEBUG
+    printf("Word nodes created: %i\n", g_word_node_cnt);
+    #endif
+
     found_word = findWord(end_word, start_word, word_sz, word_list);
     
     if (found_word != NULL) {
@@ -91,8 +96,9 @@ int main(int argc, char **argv) {
     }
 
     #ifdef DEBUG
-    printf("Word nodes created: %i\n", g_word_node_cnt);
+    printf("Word nodes left: %i\n", g_word_node_cnt);
     #endif
+
 
     return 0;
 }
@@ -247,6 +253,7 @@ Link* findWord(char *start_word, char *end_word, int word_sz, Link *words) {
         if (!found_start && strcmp(p->value, start_word) == 0) {
             ++found_start;
             removeLink(&words, p);
+            removeWord(p->value);
             continue;
         }
         
@@ -257,13 +264,16 @@ Link* findWord(char *start_word, char *end_word, int word_sz, Link *words) {
             if (t == 1) {
                 n = createLink(root_node, o, p->value);
                 o = n;
+                removeWord(p->value);
                 removeLink(&words, p);
                 return n;
             }
+            removeWord(p->value);
             removeLink(&words, p);
         } else if (t == 1) {
             n = createLink(root_node, o, p->value);
             o = n;
+            removeWord(p->value);
             removeLink(&words, p);
         }
     }
@@ -312,6 +322,7 @@ Link* findWord(char *start_word, char *end_word, int word_sz, Link *words) {
                     ++found_words;
                     n = createLink(cn, o, p->value);
                     o = n;
+                    removeWord(p->value);
                     removeLink(&words, p);
                 }
             }
@@ -388,7 +399,6 @@ void addWord(char* word) {
         }
     }
 
-
     /* add to graph */
     p = g_words;
     for (i = 0; i < g_word_sz; ++i) {
@@ -409,6 +419,28 @@ void addWord(char* word) {
     }
 
     p->value = word;
+}
+
+void removeWord(char* w) {
+    int i;
+    Word *p;
+    Word *q;
+
+    q = g_words;
+    for (i = 0; i < g_word_sz; ++i) {
+        p = q;
+        q = q->children[w[i] - 'a'];
+        if (q == NULL) {
+            return;
+        }
+    }
+
+    q->children[w[g_word_sz - 1] - 'a'] = NULL;
+    q->num_children--;
+
+    #ifdef DEBUG
+    --g_word_node_cnt;
+    #endif
 }
 
 #ifdef DEBUG
