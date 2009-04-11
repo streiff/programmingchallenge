@@ -13,7 +13,7 @@
 struct Link_S {
     struct Link_S *prev;
     struct Link_S *next;
-    char *value;
+    void *value;
 };
 
 struct Word_S {
@@ -39,10 +39,12 @@ Link* parseWords(char*, int, int);
 Link* findWord(char*, char*, int, Link*);
 int getDifference(char*, char*, int);
 void removeLink(Link**, Link*);
-Link* createLink(Link*, Link*, char*);
+Link* createLink(Link*, Link*, void*);
 
+Word* getAdjWord(char*);
 void addWord(char*);
-void removeWord(char*);
+Word* removeWord(char*);
+Link* addToStack(Link*, Link*);
 
 #ifdef DEBUG
 void printWords(Link*);
@@ -58,7 +60,6 @@ int main(int argc, char **argv) {
     Link *found_word;
     Link *word_list;
     int word_sz;
-
 
     #ifdef DEBUG
     if (argc < 3) {
@@ -118,7 +119,7 @@ Link* readDictFile(char *filename, int word_sz) {
 
     #ifdef DEBUG
     if (dict_file == NULL) {
-        printf("Error: Could not open file %s", filename);
+        printf("Error: Could not open file %s\n", filename);
         exit(1);
     }
     #endif
@@ -198,7 +199,6 @@ Link* parseWords(char *s, int l, int ws) {
 
             #endif
             strncpy(r->value, s + start_pos, word_sz);
-
             
             r->prev = q;
             q->next = r;
@@ -211,7 +211,6 @@ Link* parseWords(char *s, int l, int ws) {
 
         start_pos = newline_pos + 1;
     }
-    
 
     if (r != NULL) {
         r->next = NULL;
@@ -232,18 +231,62 @@ Link* parseWords(char *s, int l, int ws) {
 
 Link* findWord(char *start_word, char *end_word, int word_sz, Link *words) {
     Link *root_node;
+    Link *curr_node;
+    Link *l;
     Link *n;
     Link *o = NULL;
     Link *cn = NULL;    
     Link *p;
+    Link *next_layer;
+    Word *w;
+    Link *w2;
+    Link *stack;
+    Link *end_stack;
+    Link *z;
     char *curr_word;
     int t;
     int found_start = 0;
     int found_end = 0;
     int found_words;
+
+    if (removeWord(start_word) == NULL) {
+        printf("Start word not found.\n");
+        exit(1);
+    }
+
+    if (removeWord(end_word) == NULL) {
+        printf("End word not found.\n");
+        exit(1);
+    }
     
+    curr_node = createLink(NULL, NULL, start_word);
+    if (getDifference(start_word, end_word, g_word_sz) == 1) {
+        return createLink(curr_node, NULL, end_word);
+    }
+
+    stack = end_stack = createLink(NULL, NULL, curr_node);
+
+    do {
+        w2 = (Link*) stack->value;
+        w = getAdjWord(w2->value);
+
+        while (w != NULL) {
+            printf ("===|WD|%s\n", (char*) w->value);
+            l = createLink(stack->value, next_layer, w->value);
+            end_stack = addToStack(end_stack, l);
+
+            if (getDifference(w->value, end_word, g_word_sz) == 1) {
+                return createLink(l, NULL, end_word);
+            }
+            w = getAdjWord(w2->value);
+        }
+
+        stack = stack->next;
+    } while (stack != NULL);
+
+    printf("====|HERE\n");
+    fflush(stdout);
     root_node = createLink(NULL, NULL, start_word);
-    curr_word = start_word;
     
     /* build up the first set of words. special case since the start and
        end word will be in the list. We need to remove the start and end
@@ -344,8 +387,6 @@ int getDifference(char *w1, char *w2, int word_sz) {
             ++d;
         }
     }
-    
-    
     return d;
 }
 
@@ -367,7 +408,7 @@ void removeLink(Link **start, Link *p) {
     #endif
 }
 
-Link* createLink(Link *n1, Link *n2, char *s) {
+Link* createLink(Link *n1, Link *n2, void *s) {
     Link *n;
     n = (Link*) malloc(sizeof(Link));
     #ifdef DEGUG
@@ -381,6 +422,14 @@ Link* createLink(Link *n1, Link *n2, char *s) {
     n->value = s;
 
     return n;
+}
+
+Link* addToStack(Link *end, Link *value) {
+    Link *p;
+
+    p = createLink(NULL, NULL, value);
+    end->next = p;
+    return p;
 }
 
 void addWord(char* word) {
@@ -421,26 +470,58 @@ void addWord(char* word) {
     p->value = word;
 }
 
-void removeWord(char* w) {
+Word* removeWord(char* w) {
     int i;
     Word *p;
     Word *q;
 
-    q = g_words;
+    p = q = g_words;
     for (i = 0; i < g_word_sz; ++i) {
         p = q;
         q = q->children[w[i] - 'a'];
         if (q == NULL) {
-            return;
+            return NULL;
         }
     }
 
-    q->children[w[g_word_sz - 1] - 'a'] = NULL;
-    q->num_children--;
+    p->children[w[g_word_sz - 1] - 'a'] = NULL;
+    p->num_children--;
 
     #ifdef DEBUG
     --g_word_node_cnt;
+    printf("removing word: %s\n", q->value);
     #endif
+
+    return q;
+}
+
+Word* getAdjWord(char *word) {
+    Word *p;
+    int i, j, k;
+
+    for (i = 0; i < g_word_sz; ++i) {
+        for (j = 0; j < LTR_CNT; ++j) {
+            p = g_words;
+            for (k = 0; k < g_word_sz; ++k) {
+                if (i != k) {
+                    p = p->children[word[k] - 'a'];
+                } else {
+                    p = p->children[j];
+                }
+
+                if (p == NULL) {
+                    break;
+                }
+            }
+
+
+            if (p != NULL) {
+                return removeWord(p->value);
+            }
+        }
+    }
+
+    return NULL;
 }
 
 #ifdef DEBUG
@@ -448,7 +529,7 @@ void printWords(Link *words) {
     Link *p;
     
     for (p = words; p != NULL; p = p->next) {
-        printf("word: %s\n", p->value);
+        printf("word: %s\n", (char*) p->value);
     }
 }
 
@@ -456,7 +537,7 @@ void printLinks(Link *nodes) {
     Link *n;
     
     for (n = nodes; n != NULL; n = n->next) {
-        printf("word: %s\n", n->value);
+        printf("word: %s\n", (char*) n->value);
     }
 }
 #endif
