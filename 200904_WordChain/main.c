@@ -17,7 +17,7 @@ struct Link_S {
 };
 
 struct Word_S {
-    struct Word_S **children;
+    struct Word_S* children[LTR_CNT];
     int num_children;
     char *value;
 };
@@ -45,17 +45,13 @@ void addWord(char*);
 Word* removeWord(char*);
 Link* addToStack(Link*, Link*);
 
-#ifdef DEBUG
-void printWords(Link*);
-void printLinks(Link*);
-#endif
-
 /* MAIN ================================================================ */
 int main(int argc, char **argv) {
     char *start_word = argv[START_WORD];
     char *end_word = argv[END_WORD];
     char *filename = argv[FILENAME];
     Link *found_word;
+    int i;
 
     #ifdef DEBUG
     if (argc < 3) {
@@ -68,7 +64,9 @@ int main(int argc, char **argv) {
     #endif
 
     g_words = (Word*) malloc(sizeof(Word));
-    g_words->children = (Word**) calloc(LTR_CNT, sizeof(Word*));
+    for (i = 0; i < LTR_CNT; ++i) {
+        g_words->children[i] = NULL;
+    }
     g_words->num_children = 0;
     g_words->value = NULL;
     g_word_sz = strlen(start_word);
@@ -78,6 +76,13 @@ int main(int argc, char **argv) {
     #ifdef DEBUG
     printf("Word nodes created: %i\n", g_word_node_cnt);
     #endif
+
+
+    if (getDifference(start_word, end_word) == 0) {
+        printf(start_word);
+        printf("\n");
+        return 0;
+    }
 
     found_word = findWord(end_word, start_word);
     
@@ -223,15 +228,21 @@ Link* findWord(char *start_word, char *end_word) {
 }
 
 int getDifference(char *w1, char *w2) {
-    int i;
-    int d = 0;
-    
-    for (i = 0; i < g_word_sz && d <= 1; ++i) {
-        if (w1[i] != w2[i]) {
-            ++d;
-        }
+    int i = 0;
+    while (w1[i] == w2[i] && i < g_word_sz) {
+        ++i;
     }
-    return d;
+
+    if (i == g_word_sz) {
+        return 0;
+    }
+
+    ++i;
+    while (w1[i] == w2[i] && i < g_word_sz) {
+        ++i;
+    }
+
+    return i == g_word_sz ? 1 : 2;
 }
 
 Link* createLink(Link *n1, Link *n2, void *s) {
@@ -259,17 +270,17 @@ Link* addToStack(Link *end, Link *value) {
 }
 
 void addWord(char* word) {
-    int i;
-    Word* p;
-    Word* q;
+    int i, j;
+    Word* p = NULL;
+    Word* q = NULL;
     int* word_ch;
 
-    word_ch = malloc(sizeof(char) * g_word_sz);
+    word_ch = malloc(sizeof(int) * g_word_sz);
 
     /* sanitize the words */
     for (i = 0; i < g_word_sz; ++i) {
         word_ch[i] = tolower(word[i]) - 'a';
-        if (word_ch[i] < 0 || word_ch[i] >= 26) {
+        if (word_ch[i] < 0 || word_ch[i] >= LTR_CNT) {
             return;
         }
     }
@@ -283,16 +294,20 @@ void addWord(char* word) {
 
         if (p->children[word_ch[i]] == NULL) {
             q = (Word*) malloc(sizeof(Word));
-            q->children = (Word**) calloc(LTR_CNT, sizeof(Word*));
+            for ( j = 0; j < LTR_CNT; ++j) {
+                q->children[j] = NULL;
+            }
+
             q->num_children = 0;
             q->value = NULL;
 
             p->children[word_ch[i]] = q;
             p->num_children++;
+            p = q;
+        } else {
+            p = p->children[word_ch[i]];
         }
-        p = p->children[word_ch[i]];
     }
-
     p->value = word;
 }
 
@@ -349,21 +364,3 @@ Word* getAdjWord(char *word) {
 
     return NULL;
 }
-
-#ifdef DEBUG
-void printWords(Link *words) {
-    Link *p;
-    
-    for (p = words; p != NULL; p = p->next) {
-        printf("word: %s\n", (char*) p->value);
-    }
-}
-
-void printLinks(Link *nodes) {
-    Link *n;
-    
-    for (n = nodes; n != NULL; n = n->next) {
-        printf("word: %s\n", (char*) n->value);
-    }
-}
-#endif
