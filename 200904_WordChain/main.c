@@ -38,7 +38,6 @@ void readDictFile(char*);
 void parseWords(char*, int);
 Link* findWord(char*, char*);
 int getDifference(char*, char*);
-void removeLink(Link**, Link*);
 Link* createLink(Link*, Link*, void*);
 
 Word* getAdjWord(char*);
@@ -56,7 +55,6 @@ int main(int argc, char **argv) {
     char *start_word = argv[START_WORD];
     char *end_word = argv[END_WORD];
     char *filename = argv[FILENAME];
-
     Link *found_word;
 
     #ifdef DEBUG
@@ -96,7 +94,6 @@ int main(int argc, char **argv) {
     #ifdef DEBUG
     printf("Word nodes left: %i\n", g_word_node_cnt);
     #endif
-
 
     return 0;
 }
@@ -154,7 +151,6 @@ void parseWords(char *s, int l) {
     int newline_pos;
     int word_sz;
     char *w;
-
     Link *p, *q = NULL;
 
 
@@ -236,24 +232,6 @@ int getDifference(char *w1, char *w2) {
         }
     }
     return d;
-}
-
-void removeLink(Link **start, Link *p) {
-    if (p != *start) {
-        p->prev->next = p->next;
-        
-        if (p->next != NULL) {
-            p->next->prev = p->prev;
-        }
-    } else {
-        if (p->next != NULL) {
-            p->next->prev = NULL;
-        }
-        *start = p->next;
-    }
-    #ifdef DEBUG
-    free(p);
-    #endif
 }
 
 Link* createLink(Link *n1, Link *n2, void *s) {
