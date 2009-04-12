@@ -34,10 +34,10 @@ int g_word_node_cnt = 0;
 #endif
 
 /* DECLARATIONS ======================================================== */
-Link* readDictFile(char*, int);
-Link* parseWords(char*, int, int);
-Link* findWord(char*, char*, int, Link*);
-int getDifference(char*, char*, int);
+void readDictFile(char*);
+void parseWords(char*, int);
+Link* findWord(char*, char*);
+int getDifference(char*, char*);
 void removeLink(Link**, Link*);
 Link* createLink(Link*, Link*, void*);
 
@@ -58,8 +58,6 @@ int main(int argc, char **argv) {
     char *filename = argv[FILENAME];
 
     Link *found_word;
-    Link *word_list;
-    int word_sz;
 
     #ifdef DEBUG
     if (argc < 3) {
@@ -77,14 +75,13 @@ int main(int argc, char **argv) {
     g_words->value = NULL;
     g_word_sz = strlen(start_word);
 
-    word_sz = strlen(start_word);
-    word_list = readDictFile(filename, word_sz);
+    readDictFile(filename);
 
     #ifdef DEBUG
     printf("Word nodes created: %i\n", g_word_node_cnt);
     #endif
 
-    found_word = findWord(end_word, start_word, word_sz, word_list);
+    found_word = findWord(end_word, start_word);
     
     if (found_word != NULL) {
         do {
@@ -105,11 +102,10 @@ int main(int argc, char **argv) {
 }
 
 /* OTHER FUNCTIONS ===================================================== */
-Link* readDictFile(char *filename, int word_sz) {
+void readDictFile(char *filename) {
     long file_contents_sz;
     char *file_contents;
     FILE *dict_file;
-    Link *words;
 
     #ifdef DEBUG
     size_t file_read_sz;
@@ -150,22 +146,16 @@ Link* readDictFile(char *filename, int word_sz) {
 
     fclose(dict_file);
 
-    words = parseWords(file_contents, file_contents_sz, word_sz);
-
-    #ifdef DEBUG
-    free(file_contents);
-    #endif
-
-    return words;
+    parseWords(file_contents, file_contents_sz);
 }
 
-Link* parseWords(char *s, int l, int ws) {
+void parseWords(char *s, int l) {
     int start_pos = 0;
     int newline_pos;
     int word_sz;
     char *w;
 
-    Link *p, *q, *r = NULL;
+    Link *p, *q = NULL;
 
 
     p = malloc(sizeof(Link));
@@ -181,73 +171,23 @@ Link* parseWords(char *s, int l, int ws) {
         for (newline_pos = start_pos; s[newline_pos] != '\n' && newline_pos < l; ++newline_pos);
 
         word_sz = newline_pos - start_pos;
-        if (word_sz == ws) {
-            r = malloc(sizeof(Link));
-            #ifdef DEBUG
-            if (r == NULL) {
-                printf ("Error: could not allocate memory for real node.\n");
-                exit(1);
-            }
-            #endif
-
-            r->value = (char*) malloc(sizeof(char) * ws + 1);
-            #ifdef DEBUG
-            if (r->value == NULL) {
-                printf ("Error: could not allocate memory for temp word\n");
-                exit(1);
-            }
-
-            #endif
-            strncpy(r->value, s + start_pos, word_sz);
-            
-            r->prev = q;
-            q->next = r;
-            q = r;
-
-            w = (char*) malloc(sizeof(char) * ws + 1);
-            strncpy(w, s + start_pos, word_sz);
+        if (word_sz == g_word_sz) {
+            w = (char*) malloc(sizeof(char) * g_word_sz + 1);
+            strncpy(w, s + start_pos, g_word_sz);
             addWord(w);
         }
 
         start_pos = newline_pos + 1;
     }
-
-    if (r != NULL) {
-        r->next = NULL;
-    }
-    
-    if (p == q) {
-        printf ("Error: No words found of same length\n");
-        exit(1);
-    }
-    q = p->next;
-    q->prev = NULL;
-
-    #ifdef DEBUG
-    free(p);
-    #endif
-    return q;
 }
 
-Link* findWord(char *start_word, char *end_word, int word_sz, Link *words) {
-    Link *root_node;
+Link* findWord(char *start_word, char *end_word) {
     Link *curr_node;
     Link *l;
-    Link *n;
-    Link *o = NULL;
-    Link *cn = NULL;    
-    Link *p;
-    Link *next_layer;
     Word *w;
     Link *w2;
     Link *stack;
     Link *end_stack;
-    Link *z;
-    char *curr_word;
-    int t;
-    int found_start = 0;
-    int found_end = 0;
-    int found_words;
 
     if (removeWord(start_word) == NULL) {
         printf("Start word not found.\n");
@@ -260,7 +200,7 @@ Link* findWord(char *start_word, char *end_word, int word_sz, Link *words) {
     }
     
     curr_node = createLink(NULL, NULL, start_word);
-    if (getDifference(start_word, end_word, g_word_sz) == 1) {
+    if (getDifference(start_word, end_word) == 1) {
         return createLink(curr_node, NULL, end_word);
     }
 
@@ -271,11 +211,10 @@ Link* findWord(char *start_word, char *end_word, int word_sz, Link *words) {
         w = getAdjWord(w2->value);
 
         while (w != NULL) {
-            printf ("===|WD|%s\n", (char*) w->value);
-            l = createLink(stack->value, next_layer, w->value);
+            l = createLink(stack->value, NULL, w->value);
             end_stack = addToStack(end_stack, l);
 
-            if (getDifference(w->value, end_word, g_word_sz) == 1) {
+            if (getDifference(w->value, end_word) == 1) {
                 return createLink(l, NULL, end_word);
             }
             w = getAdjWord(w2->value);
@@ -284,105 +223,14 @@ Link* findWord(char *start_word, char *end_word, int word_sz, Link *words) {
         stack = stack->next;
     } while (stack != NULL);
 
-    printf("====|HERE\n");
-    fflush(stdout);
-    root_node = createLink(NULL, NULL, start_word);
-    
-    /* build up the first set of words. special case since the start and
-       end word will be in the list. We need to remove the start and end
-       words -- erroring if they are not there.
-    */
-    for (p = words; p != NULL; p = p->next) {
-        if (!found_start && strcmp(p->value, start_word) == 0) {
-            ++found_start;
-            removeLink(&words, p);
-            removeWord(p->value);
-            continue;
-        }
-        
-        t = getDifference(start_word, p->value, word_sz);
-        if (!found_end && strcmp(p->value, end_word) == 0) {
-            ++found_end;
-            
-            if (t == 1) {
-                n = createLink(root_node, o, p->value);
-                o = n;
-                removeWord(p->value);
-                removeLink(&words, p);
-                return n;
-            }
-            removeWord(p->value);
-            removeLink(&words, p);
-        } else if (t == 1) {
-            n = createLink(root_node, o, p->value);
-            o = n;
-            removeWord(p->value);
-            removeLink(&words, p);
-        }
-    }
-    
-    if (found_start == 0 || found_end == 0) {
-        #ifdef DEBUG
-        printf("Start word (%d) or end word (%d) not found\n", found_start, found_end);
-        #endif
-        return NULL;
-    }
-     
-    if (o == NULL) {
-        #ifdef DEBUG
-        printWords(words);
-        printf("o null with start word %s \n", start_word);
-        #endif
-        return NULL;
-    }
-
-    if (words == NULL) {
-        #ifdef DEBUG
-        printWords(words);
-        printf("outta words afer first scan");
-        #endif
-        return NULL;
-    }
-    
-    /* main loop. build up the layers till we have our word. */
-    do {
-        found_words = 0;
-
-        cn = o;
-        o = NULL;
-
-        while (cn != NULL) {
-            curr_word = cn->value;
-
-            if (getDifference(curr_word, end_word, word_sz) == 1) {
-                n = createLink(cn, o, end_word);
-                o = n;
-                return n;
-            }
-
-            for (p = words; p != NULL; p = p->next) {
-                if (getDifference(curr_word, p->value, word_sz) == 1) {
-                    ++found_words;
-                    n = createLink(cn, o, p->value);
-                    o = n;
-                    removeWord(p->value);
-                    removeLink(&words, p);
-                }
-            }
-            cn = cn->next;
-
-        }
-
-    } while (found_words != 0);
-
     return NULL;
 }
 
-int getDifference(char *w1, char *w2, int word_sz) {
+int getDifference(char *w1, char *w2) {
     int i;
     int d = 0;
     
-    for (i = 0; i < word_sz && d <= 1; ++i) {
+    for (i = 0; i < g_word_sz && d <= 1; ++i) {
         if (w1[i] != w2[i]) {
             ++d;
         }
