@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-O3 -Wall -ansi -pedantic -lm -mtune=core2
+CFLAGS=-O3 -Wall -ansi -pedantic -lm 
 DEBUG_FLAGS=-g -pg
 
 main: main.c
