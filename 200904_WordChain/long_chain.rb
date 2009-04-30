@@ -4,6 +4,7 @@ MAX_TIME = 300
 
 class String
     def adj?(word)
+	# test comment
         diff = 0
         0.upto(word.length - 1) {|i| diff += 1 if word[i] != self[i] }
         diff == 1
