@@ -4,9 +4,7 @@ MAX_TIME = 300
 
 class String
     def adj?(word)
-        diff = 0
-        0.upto(word.length - 1) {|i| diff += 1 if word[i] != self[i] }
-        diff == 1
+        0.upto(word.length - 1).inject(0) {|d, i| word[i] != self[i] ? d + 1 : d} == 1
     end
 end
 
