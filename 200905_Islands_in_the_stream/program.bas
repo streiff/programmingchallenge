@@ -1,15 +1,25 @@
-5   DEF FNCHARAT$(X$, Y) = MID$(X$, Y, 1)
-10  DIM LINES$(255)
-20  ROWNUM = 0 
-99  ON ERROR GOTO 6000
-100 LINE INPUT "Filename (or quit to exit): "; FILENAME$
-110 IF FILENAME$ = "quit" THEN GOTO 500
-120 GOSUB 1000
-130 COLNUM = LEN(LINES$(0))
-210 GOSUB 3500
-230 GOSUB 4000
-235 ERASE LINES$
-240 GOTO 10
+1   ' GW-BASIC program to calculate the number or landmasses (and size)
+2   ' in a given file.
+3   '
+4   ' GW-BASIC interpreter can be found at:
+5   ' http://www.geocities.com/KindlyRat/GWBASIC.html
+6   '
+10  DEF FNCHARAT$(X$, Y) = MID$(X$, Y, 1)
+20  DIM LINES$(255)
+30  ROWNUM = 0 
+40  ON ERROR GOTO 9000
+50  LINE INPUT "Filename (or quit to exit): "; FILENAME$
+60  IF FILENAME$ = "quit" THEN GOTO 500
+70  ' Load data from file
+71  GOSUB 1000
+80  COLNUM = LEN(LINES$(0))
+90  ' Mark the land masses with different characters
+91  GOSUB 3500
+100 ' Count the land masses and print out the result
+101 GOSUB 4000
+110 ERASE LINES$
+120 ' Prompt for next file
+121 GOTO 20
 500 SYSTEM
 
 1000 ' Load the data
@@ -186,10 +196,12 @@
 4221 ERASE RESULTS
 4230 RETURN
 
-6000 A=ERR: B=ERL
-6010 IF A <> 53 THEN SYSTEM
-6015 PRINT "File not found."
-6020 RESUME 100
+
+9000 ' Error handler for File not found.
+9010 A=ERR: B=ERL
+9020 IF A <> 53 THEN SYSTEM
+9030 PRINT "File not found."
+9040 RESUME 50
 
 
 
