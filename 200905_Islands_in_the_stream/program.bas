@@ -6,7 +6,6 @@
 110 IF FILENAME$ = "quit" THEN GOTO 500
 120 GOSUB 1000
 130 COLNUM = LEN(LINES$(0))
-150 GOSUB 2000
 210 GOSUB 3500
 230 GOSUB 4000
 235 ERASE LINES$
@@ -33,24 +32,6 @@
 1530 NEXT I
 1540 PRINT
 1550 RETURN
-
-2000 ' replace all edge ocean squares with periods
-2001 ' relies on: LINES$ - map data
-2002 '            ROWNUM - number of rows in the map
-2003 '            COLNUM - number of columns in the map
-2010 FOR I = 1 TO COLNUM
-2020 IF MID$(LINES$(0), I, 1) <> "-" THEN GOTO 2040
-2030 MID$(LINES$(0), I) = "."
-2040 IF MID$(LINES$(ROWNUM - 1), I, 1) <> "-" THEN GOTO 2060
-2050 MID$(LINES$(ROWNUM - 1), I) = "."
-2060 NEXT
-2070 FOR I = 1 TO ROWNUM - 2
-2080 IF MID$(LINES$(I), 1, 1) <> "-" THEN GOTO 2100
-2090 MID$(LINES$(I), 1, 1) = "."
-2100 IF MID$(LINES$(I), COLNUM, 1) <> "-" THEN GOTO 2120
-2110 MID$(LINES$(I), COLNUM, 1) = "."
-2120 NEXT
-2130 RETURN
 
 2500 ' replace adjacent squares matching a character to another character
 2501 ' relies on: SOURCE$ - character that is being expanded
