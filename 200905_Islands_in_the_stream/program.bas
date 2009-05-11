@@ -6,20 +6,26 @@
 6   '
 10  DEF FNCHARAT$(X$, Y) = MID$(X$, Y, 1)
 20  DIM LINES$(255)
-30  ROWNUM = 0 
-40  ON ERROR GOTO 9000
-50  LINE INPUT "Filename (or quit to exit): "; FILENAME$
-60  IF FILENAME$ = "quit" THEN GOTO 500
-70  ' Load data from file
-71  GOSUB 1000
-80  COLNUM = LEN(LINES$(0))
-90  ' Mark the land masses with different characters
-91  GOSUB 3500
-100 ' Count the land masses and print out the result
-101 GOSUB 4000
-110 ERASE LINES$
-120 ' Prompt for next file
-121 GOTO 20
+30  DIM RESULTS(26)
+40  ROWNUM = 0 
+50  ON ERROR GOTO 9000
+60  LINE INPUT "Filename (or quit to exit): "; FILENAME$
+70  IF FILENAME$ = "quit" THEN GOTO 500
+80    ' Load data from file
+81    GOSUB 1000
+90    COLNUM = LEN(LINES$(0))
+100    ' Print the map
+101   GOSUB 1500
+110   ' Mark the land masses with different characters
+111   GOSUB 3500
+120   ' Count the land masses
+121   GOSUB 4000
+130   ' print the results
+131   GOSUB 4175
+140   ERASE LINES$
+150   ERASE RESULTS
+160   ' Prompt for next file
+161   GOTO 20
 500 SYSTEM
 
 1000 ' Load the data
@@ -173,7 +179,6 @@
 4002 '            ROWNUM - number of rows in the map
 4003 '            COLNUM - number of columns in the map
 4004 CONTCOUNT = 0
-4010 DIM RESULTS(26)
 4020 FOR I = 0 TO ROWNUM - 1
 4030 FOR J = 1 TO COLNUM
 4040 TOKEN = ASC(MID$(LINES$(I), J, 1)) - ASC("A")
@@ -183,25 +188,26 @@
 4080 RESULTS(TOKEN) = RESULTS(TOKEN) + 1
 4140 NEXT
 4150 NEXT
-4160 GOSUB 1000
-4170 GOSUB 1500
-4175 IF CONTCOUNT > 1 THEN GOTO 4185
+4155 RETURN
+
+4175 IF CONTCOUNT <> 1 THEN GOTO 4185
 4180 PRINT STR$(CONTCOUNT) + " continent"
 4181 GOTO 4190
 4185 PRINT STR$(CONTCOUNT) + " continents"
-4190 FOR I = 0 TO 25
+4190 FOR I = 0 TO 26
 4200 IF RESULTS(I) = 0 THEN GOTO 4220
 4210 PRINT STR$(RESULTS(I))
 4220 NEXT
-4221 ERASE RESULTS
 4230 RETURN
 
 
 9000 ' Error handler for File not found.
 9010 A=ERR: B=ERL
-9020 IF A <> 53 THEN SYSTEM
+9020 IF A <> 53 THEN GOTO 9050
 9030 PRINT "File not found."
 9040 RESUME 50
+9050 PRINT "Error " + STR$(A) + " on line " + STR$(B)
+9060 SYSTEM
 
 
 
