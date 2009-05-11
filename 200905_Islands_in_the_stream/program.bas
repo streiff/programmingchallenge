@@ -5,12 +5,12 @@
 5   ' http://www.geocities.com/KindlyRat/GWBASIC.html
 6   '
 10  DEF FNCHARAT$(X$, Y) = MID$(X$, Y, 1)
-20  DIM LINES$(255)
-30  DIM RESULTS(26)
-40  ROWNUM = 0 
-50  ON ERROR GOTO 9000
-60  LINE INPUT "Filename (or quit to exit): "; FILENAME$
-70  IF FILENAME$ = "quit" THEN GOTO 500
+20  ON ERROR GOTO 9000
+30  LINE INPUT "Filename (or quit to exit): "; FILENAME$
+40  WHILE FILENAME$ <> "quit"
+50    DIM LINES$(255)
+60    DIM RESULTS(26)
+70    ROWNUM = 0 
 80    ' Load data from file
 81    GOSUB 1000
 90    COLNUM = LEN(LINES$(0))
@@ -22,10 +22,10 @@
 121   GOSUB 4000
 130   ' print the results
 131   GOSUB 4175
-140   ERASE LINES$
-150   ERASE RESULTS
-160   ' Prompt for next file
-161   GOTO 20
+140   ERASE RESULTS
+150   ERASE LINES$
+160   LINE INPUT "Filename (or quit to exit): "; FILENAME$
+170 WEND 
 500 SYSTEM
 
 1000 ' Load the data
@@ -205,7 +205,9 @@
 9010 A=ERR: B=ERL
 9020 IF A <> 53 THEN GOTO 9050
 9030 PRINT "File not found."
-9040 RESUME 50
+9031 ERASE RESULTS
+9032 ERASE LINES$
+9040 RESUME 30
 9050 PRINT "Error " + STR$(A) + " on line " + STR$(B)
 9060 SYSTEM
 
