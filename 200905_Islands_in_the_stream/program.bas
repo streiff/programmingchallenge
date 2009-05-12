@@ -48,108 +48,6 @@
 2040 PRINT
 2050 RETURN
 
-2500 ' replace adjacent squares matching a character to another character
-2501 ' relies on: SOURCE$ - character that is being expanded
-2502 '            TARGET$ - character that will be replaced
-2003 '            ROWNUM - number of rows in the map
-2004 '            COLNUM - number of columns in the map
-2505 '            LINES$ - map data
-2506 '
-2510 SQFND = 0
-2411 '
-2512 ' from the top to bottom
-2513 FOR I = 0 TO ROWNUM - 1
-2520 FOR J = 1 TO COLNUM
-2530 IF MID$(LINES$(I), J, 1) <> SOURCE$ THEN GOTO 2860
-2540 ' northwest
-2541 IF I = 0 OR J = 1 THEN GOTO 2580
-2550 IF MID$(LINES$(I - 1), J - 1, 1) <> TARGET$ THEN GOTO 2580
-2560 MID$(LINES$(I - 1), J - 1, 1) = SOURCE$
-2570 SQFND = SQFND + 1
-2580 ' north
-2581 IF I = 0 THEN GOTO 2620
-2590 IF MID$(LINES$(I - 1), J, 1) <> TARGET$ THEN GOTO 2620
-2600 MID$(LINES$(I - 1), J, 1) = SOURCE$
-2610 SQFND = SQFND + 1
-2620 ' northeast
-2621 IF I = 0 OR J = COLNUM THEN GOTO 2660
-2630 IF MID$(LINES$(I - 1), J + 1, 1) <> TARGET$ THEN GOTO 2660
-2640 MID$(LINES$(I - 1), J + 1, 1) = SOURCE$
-2650 SQFND = SQFND + 1
-2660 ' west
-2661 IF J = 1 THEN GOTO 2700
-2670 IF MID$(LINES$(I), J - 1, 1) <> TARGET$ THEN GOTO 2700
-2680 MID$(LINES$(I), J - 1, 1) = SOURCE$
-2690 SQFND = SQFND + 1
-2700 ' northeast
-2701 IF J = COLNUM THEN GOTO 2740
-2710 IF MID$(LINES$(I), J + 1, 1) <> TARGET$ THEN GOTO 2740
-2720 MID$(LINES$(I), J + 1, 1) = SOURCE$
-2730 SQFND = SQFND + 1
-2740 ' southwest
-2741 IF I = ROWNUM - 1 OR J = 1 THEN GOTO 2780
-2750 IF MID$(LINES$(I + 1), J - 1, 1) <> TARGET$ THEN GOTO 2780
-2760 MID$(LINES$(I + 1), J - 1, 1) = SOURCE$
-2770 SQFND = SQFND + 1
-2780 ' south
-2781 IF I = ROWNUM - 1 THEN GOTO 2820
-2790 IF MID$(LINES$(I + 1), J, 1) <> TARGET$ THEN GOTO 2820
-2800 MID$(LINES$(I + 1), J, 1) = SOURCE$
-2810 SQFND = SQFND + 1
-2820 ' southeast
-2821 IF I = ROWNUM - 1 OR J = COLNUM THEN GOTO 2860
-2830 IF MID$(LINES$(I + 1), J + 1, 1) <> TARGET$ THEN GOTO 2860
-2840 MID$(LINES$(I + 1), J + 1, 1) = SOURCE$
-2850 SQFND = SQFND + 1
-2860 NEXT
-2870 NEXT
-2880 '
-2881 ' from the top to bottom
-2882 FOR I = ROWNUM TO 0 STEP -1
-2890 FOR J = COLNUM TO 1 STEP -1
-2900 IF MID$(LINES$(I), J, 1) <> SOURCE$ THEN GOTO 3190
-2910 ' from bottom to top
-2911 ' north
-2912 IF I = 0 THEN GOTO 2950
-2920 IF MID$(LINES$(I - 1), J, 1) <> TARGET$ THEN GOTO 2950
-2930 MID$(LINES$(I - 1), J, 1) = SOURCE$
-2940 SQFND = SQFND + 1
-2950 ' northeast
-2951 IF I = 0 OR J = COLNUM THEN GOTO 2990
-2960 IF MID$(LINES$(I - 1), J + 1, 1) <> TARGET$ THEN GOTO 2990
-2970 MID$(LINES$(I - 1), J + 1, 1) = SOURCE$
-2980 SQFND = SQFND + 1
-2990 ' west
-2991 IF J = 1 THEN GOTO 3030
-3000 IF MID$(LINES$(I), J - 1, 1) <> TARGET$ THEN GOTO 3030
-3010 MID$(LINES$(I), J - 1, 1) = SOURCE$
-3020 SQFND = SQFND + 1
-3030 ' northeast
-3031 IF J = COLNUM THEN GOTO 3070
-3040 IF MID$(LINES$(I), J + 1, 1) <> TARGET$ THEN GOTO 3070
-3050 MID$(LINES$(I), J + 1, 1) = SOURCE$
-3060 SQFND = SQFND + 1
-3070 ' southwest
-3071 IF I = ROWNUM - 1 OR J = 1 THEN GOTO 3110
-3080 IF MID$(LINES$(I + 1), J - 1, 1) <> TARGET$ THEN GOTO 3110
-3090 MID$(LINES$(I + 1), J - 1, 1) = SOURCE$
-3100 SQFND = SQFND + 1
-3110 ' south
-3111 IF I = ROWNUM - 1 THEN GOTO 3150
-3120 IF MID$(LINES$(I + 1), J, 1) <> TARGET$ THEN GOTO 3150
-3130 MID$(LINES$(I + 1), J, 1) = SOURCE$
-3140 SQFND = SQFND + 1
-3150 ' southeast
-3151 IF I = ROWNUM - 1 OR J = COLNUM THEN GOTO 3190
-3160 IF MID$(LINES$(I + 1), J + 1, 1) <> TARGET$ THEN GOTO 3190
-3170 MID$(LINES$(I + 1), J + 1, 1) = SOURCE$
-3180 SQFND = SQFND + 1
-3190 NEXT
-3200 NEXT
-3210 IF SQFND = 0 THEN GOTO 3230
-3220 GOTO 2510
-3230 RETURN
-
 3500 ' Marks all the contenents with different numbers
 3501 ' relies on: LINES$ - map data
 3502 '            ROWNUM - number of rows in the map
@@ -166,7 +64,7 @@
 3620 MID$(LINES$(I), J, 1) = MARK$
 3630 SOURCE$ = MARK$
 3640 TARGET$ = "+"
-3650 GOSUB 2500
+3650 GOSUB 6000
 3660 MARK = MARK + 1
 3670 IF MARK = ASC("Z") GOTO 3690
 3680 GOTO 3510
@@ -199,6 +97,119 @@
 4220 NEXT
 4230 RETURN
 
+6000 ' replace adjacent squares matching a character to another character
+6001 ' relies on: SOURCE$ - character that is being expanded
+6002 '            TARGET$ - character that will be replaced
+6003 '            ROWNUM - number of rows in the map
+6004 '            COLNUM - number of columns in the map
+6005 '            LINES$ - map data
+6006 '
+6007 SQFND = 0
+6010 ' from the top to bottom
+6011 FOR X6000 = 0 TO ROWNUM - 1
+6020   FOR Y6000 = 1 TO COLNUM
+6030     ' Skip to next iteration if this square does not match source
+6030     IF FNCHARAT$(LINES$(X6000), Y6000) <> SOURCE$ THEN GOTO 6360
+6040       ' northwest
+6041       IF X6000 = 0 OR Y6000 = 1 THEN GOTO 6080
+6050         IF FNCHARAT$(LINES$(X6000 - 1), Y6000 - 1) <> TARGET$ THEN GOTO 6080
+6060           MID$(LINES$(X6000 - 1), Y6000 - 1, 1) = SOURCE$
+6070           SQFND = SQFND + 1
+6080       '
+6081       ' north
+6082       IF X6000 = 0 THEN GOTO 6120
+6090         IF FNCHARAT$(LINES$(X6000 - 1), Y6000) <> TARGET$ THEN GOTO 6120
+6100           MID$(LINES$(X6000 - 1), Y6000, 1) = SOURCE$
+6110           SQFND = SQFND + 1
+6120       '
+6121       ' northeast
+6122       IF X6000 = 0 OR Y6000 = COLNUM THEN GOTO 6160
+6130         IF FNCHARAT$(LINES$(X6000 - 1), Y6000 + 1) <> TARGET$ THEN GOTO 6160
+6140           MID$(LINES$(X6000 - 1), Y6000 + 1, 1) = SOURCE$
+6150           SQFND = SQFND + 1
+6160       '
+6161       ' west
+6162       IF Y6000 = 1 THEN GOTO 6200
+6170         IF FNCHARAT$(LINES$(X6000), Y6000 - 1) <> TARGET$ THEN GOTO 6200
+6180           MID$(LINES$(X6000), Y6000 - 1, 1) = SOURCE$
+6190           SQFND = SQFND + 1
+6200       '
+6201       ' east
+6202       IF Y6000 = COLNUM THEN GOTO 6240
+6210         IF FNCHARAT$(LINES$(X6000), Y6000 + 1) <> TARGET$ THEN GOTO 6240
+6220           MID$(LINES$(X6000), Y6000 + 1, 1) = SOURCE$
+6230           SQFND = SQFND + 1
+6240       '
+6241       ' southwest
+6242       IF X6000 = ROWNUM - 1 OR Y6000 = 1 THEN GOTO 6280
+6250         IF FNCHARAT$(LINES$(X6000 + 1), Y6000 - 1) <> TARGET$ THEN GOTO 6280
+6260           MID$(LINES$(X6000 + 1), Y6000 - 1, 1) = SOURCE$
+6270           SQFND = SQFND + 1
+6280       '
+6281       ' south
+6282       IF X6000 = ROWNUM - 1 THEN GOTO 6320
+6290         IF FNCHARAT$(LINES$(X6000 + 1), Y6000) <> TARGET$ THEN GOTO 6320
+6300           MID$(LINES$(X6000 + 1), Y6000, 1) = SOURCE$
+6310           SQFND = SQFND + 1
+6320       '
+6321       ' southeast
+6322       IF X6000 = ROWNUM - 1 OR Y6000 = COLNUM THEN GOTO 6360
+6330         IF FNCHARAT$(LINES$(X6000 + 1), Y6000 + 1) <> TARGET$ THEN GOTO 6360
+6340           MID$(LINES$(X6000 + 1), Y6000 + 1, 1) = SOURCE$
+6350           SQFND = SQFND + 1
+6360   NEXT
+6370 NEXT
+6380 '
+6381 ' from bottom to top
+6382 FOR X6000 = ROWNUM TO 0 STEP -1
+6390   FOR Y6000 = COLNUM TO 1 STEP -1
+6400     ' Skip to next iteration if this square does not match source
+6401     IF FNCHARAT$(LINES$(X6000), Y6000) <> SOURCE$ THEN GOTO 6690
+6410     ' north
+6411       IF X6000 = 0 THEN GOTO 6450
+6420         IF FNCHARAT$(LINES$(X6000 - 1), Y6000) <> TARGET$ THEN GOTO 6450
+6430           MID$(LINES$(X6000 - 1), Y6000, 1) = SOURCE$
+6440           SQFND = SQFND + 1
+6450     '
+6451     ' northeast
+6452     IF X6000 = 0 OR Y6000 = COLNUM THEN GOTO 6490
+6460       IF FNCHARAT$(LINES$(X6000 - 1), Y6000 + 1) <> TARGET$ THEN GOTO 6490
+6470         MID$(LINES$(X6000 - 1), Y6000 + 1, 1) = SOURCE$
+6480         SQFND = SQFND + 1
+6490     '
+6491     ' west
+6492     IF Y6000 = 1 THEN GOTO 6530
+6500       IF FNCHARAT$(LINES$(X6000), Y6000 - 1) <> TARGET$ THEN GOTO 6530
+6510         MID$(LINES$(X6000), Y6000 - 1, 1) = SOURCE$
+6520         SQFND = SQFND + 1
+6530     '
+6531     ' east
+6532     IF Y6000 = COLNUM THEN GOTO 6570
+6540       IF FNCHARAT$(LINES$(X6000), Y6000 + 1) <> TARGET$ THEN GOTO 6570
+6550         MID$(LINES$(X6000), Y6000 + 1, 1) = SOURCE$
+6560         SQFND = SQFND + 1
+6570     '
+6571     ' southwest
+6572     IF X6000 = ROWNUM - 1 OR Y6000 = 1 THEN GOTO 6610
+6580       IF FNCHARAT$(LINES$(X6000 + 1), Y6000 - 1) <> TARGET$ THEN GOTO 6610
+6590         MID$(LINES$(X6000 + 1), Y6000 - 1, 1) = SOURCE$
+6600         SQFND = SQFND + 1
+6610     '
+6611     ' south
+6612     IF X6000 = ROWNUM - 1 THEN GOTO 6650
+6620       IF FNCHARAT$(LINES$(X6000 + 1), Y6000) <> TARGET$ THEN GOTO 6650
+6630         MID$(LINES$(X6000 + 1), Y6000, 1) = SOURCE$
+6640         SQFND = SQFND + 1
+6650     '
+6651     ' southeast
+6652     IF X6000 = ROWNUM - 1 OR Y6000 = COLNUM THEN GOTO 6690
+6660       IF FNCHARAT$(LINES$(X6000 + 1), Y6000 + 1) <> TARGET$ THEN GOTO 6690
+6680         MID$(LINES$(X6000  + 1), Y6000 + 1, 1) = SOURCE$
+6690         SQFND = SQFND + 1
+6690   NEXT
+6700 NEXT
+6710 IF SQFND = 0 THEN RETURN
+6720 GOTO 6000
 
 9000 ' Error handler for File not found.
 9010 A=ERR: B=ERL
@@ -209,6 +220,3 @@
 9040 RESUME 30
 9050 PRINT "Error " + STR$(A) + " on line " + STR$(B)
 9060 SYSTEM
-
-
-
