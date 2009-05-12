@@ -17,7 +17,7 @@
 100    ' Print the map
 101   GOSUB 2000
 110   ' Mark the land masses with different characters
-111   GOSUB 3500
+111   GOSUB 3000
 120   ' Count the land masses
 121   GOSUB 4000
 130   ' print the results
@@ -48,28 +48,27 @@
 2040 PRINT
 2050 RETURN
 
-3500 ' Marks all the contenents with different numbers
-3501 ' relies on: LINES$ - map data
-3502 '            ROWNUM - number of rows in the map
-3503 '            COLNUM - number of columns in the map
-3504 '
-3505 MARK = ASC("A")
-3510 MARK$ = CHR$(MARK)
-3560 FOR I = 0 TO ROWNUM - 1
-3570 FOR J = 1 TO COLNUM
-3580 IF MID$(LINES$(I), J, 1) = "+" THEN GOTO 3620
-3590 NEXT
-3600 NEXT
-3610 RETURN
-3620 MID$(LINES$(I), J, 1) = MARK$
-3630 SOURCE$ = MARK$
-3640 TARGET$ = "+"
-3650 GOSUB 6000
-3660 MARK = MARK + 1
-3670 IF MARK = ASC("Z") GOTO 3690
-3680 GOTO 3510
-3690 PRINT "Error: Too many landmasses. This is basic after all!"
-3700 GOTO 500 
+3000 ' Marks all the contenents with different numbers
+3001 ' relies on: LINES$ - map data
+3002 '            ROWNUM - number of rows in the map
+3003 '            COLNUM - number of columns in the map
+3004 '
+3005 MARK = ASC("A") - 1
+3010 FOR X3000 = 0 TO ROWNUM - 1
+3020   FOR Y3000 = 1 TO COLNUM
+3030     IF FNCHARAT$(LINES$(X3000), Y3000) <> "+" THEN GOTO 3130
+3040       MARK = MARK + 1
+3050       MARK$ = CHR$(MARK)
+3060       MID$(LINES$(X3000), Y3000, 1) = MARK$
+3070       SOURCE$ = MARK$
+3080       TARGET$ = "+"
+3090       GOSUB 6000
+3100       IF MARK <= ASC("Z") GOTO 3130
+3110         PRINT "Error: Too many landmasses. This is basic after all!"
+3120         SYSTEM
+3130   NEXT
+3140 NEXT
+3150 RETURN
 
 4000 ' Prints out the output of the program
 4001 ' relies on: LINES$ - map data that has been marked
