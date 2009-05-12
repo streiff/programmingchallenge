@@ -1,0 +1,13 @@
+10  GW-BASIC -- old school to the EXREME!!!
+20
+30  A simple algorithm for a simple language.
+40 
+50  After loading the map into memory it finds a + and changes it to a
+60  marker character. Then it proceeds to scan the map from north to 
+70  south (and then south to north) changing each adjacent + to the
+80  marker character. Once it does a pass without any changes it selectes
+90  a different marker character and repeats the process with the next
+100 land mass until there are no remaining landmasses.
+110
+120 Once it is done it counts all the different characters and prints out 
+130 the result.
