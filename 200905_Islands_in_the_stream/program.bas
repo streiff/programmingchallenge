@@ -15,7 +15,7 @@
 81    GOSUB 1000
 90    COLNUM = LEN(LINES$(0))
 100    ' Print the map
-101   GOSUB 1500
+101   GOSUB 2000
 110   ' Mark the land masses with different characters
 111   GOSUB 3500
 120   ' Count the land masses
@@ -41,13 +41,12 @@
 1100 PRINT "Error: input exceeded 255 lines"
 1110 SYSTEM
 
-1500 ' print the lines
-1501 ' relies on: LINES$ - map data
-1510 FOR I = 0 TO ROWNUM - 1
-1520 PRINT LINES$(I)
-1530 NEXT I
-1540 PRINT
-1550 RETURN
+2000 ' print the map
+2010 FOR X2000 = 0 TO ROWNUM - 1
+2020   PRINT LINES$(X2000)
+2030 NEXT X2000
+2040 PRINT
+2050 RETURN
 
 2500 ' replace adjacent squares matching a character to another character
 2501 ' relies on: SOURCE$ - character that is being expanded
