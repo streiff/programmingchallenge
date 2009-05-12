@@ -11,3 +11,9 @@
 110
 120 Once it is done it counts all the different characters and prints out 
 130 the result.
+140
+150 You can get the gw-basic interpreter at:
+160 http://www.geocities.com/KindlyRat/GWBASIC.html
+170
+180 And run the program:
+190 GWBASIC.EXE program.bas
