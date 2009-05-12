@@ -21,7 +21,7 @@
 120   ' Count the land masses
 121   GOSUB 4000
 130   ' print the results
-131   GOSUB 4175
+131   GOSUB 5000
 140   ERASE RESULTS
 150   ERASE LINES$
 160   LINE INPUT "Filename (or quit to exit): "; FILENAME$
@@ -32,14 +32,16 @@
 1010 OPEN "I", 1, FILENAME$
 1020 ROWNUM = 0
 1030 WHILE EOF(1) <> -1
-1040   INPUT#1, LINES$(ROWNUM)
-1050   ROWNUM = ROWNUM + 1
-1060   IF ROWNUM > 255 THEN GOTO 1100
-1070 WEND
-1080 CLOSE 1
-1090 RETURN
-1100 PRINT "Error: input exceeded 255 lines"
-1110 SYSTEM
+1040   INPUT#1, L$
+1050   IF LEN(L$) = 0 THEN GOTO 1080
+1060     LINES$(ROWNUM) = L$
+1070     ROWNUM = ROWNUM + 1
+1080   IF ROWNUM < 255 THEN GOTO 1110
+1090     PRINT "Error: input exceeded 255 lines"
+1100     SYSTEM
+1110 WEND
+1120 CLOSE 1
+1130 RETURN
 
 2000 ' print the map
 2010 FOR X2000 = 0 TO ROWNUM - 1
@@ -70,31 +72,39 @@
 3140 NEXT
 3150 RETURN
 
-4000 ' Prints out the output of the program
+4000 ' Counts the continents and thier sizes
 4001 ' relies on: LINES$ - map data that has been marked
 4002 '            ROWNUM - number of rows in the map
 4003 '            COLNUM - number of columns in the map
-4004 CONTCOUNT = 0
-4020 FOR I = 0 TO ROWNUM - 1
-4030 FOR J = 1 TO COLNUM
-4040 TOKEN = ASC(MID$(LINES$(I), J, 1)) - ASC("A")
-4050 IF TOKEN < 0 OR TOKEN > 26 THEN GOTO 4140
-4060 IF RESULTS(TOKEN) > 0 THEN GOTO 4080
-4070 CONTCOUNT = CONTCOUNT + 1
-4080 RESULTS(TOKEN) = RESULTS(TOKEN) + 1
-4140 NEXT
-4150 NEXT
-4155 RETURN
+4004 '            RESULTS - array for continent count results
+4005 '            CONTCOUNT - count for the number of continents
+4006 CONTCOUNT = 0
+4010 FOR X4000 = 0 TO ROWNUM - 1
+4020   FOR Y4000 = 1 TO COLNUM
+4030     TOKEN = ASC(FNCHARAT$(LINES$(X4000), Y4000)) - ASC("A")
+4040     IF TOKEN < 0 OR TOKEN > 26 THEN GOTO 4080
+4050       IF RESULTS(TOKEN) > 0 THEN GOTO 4070
+4060         CONTCOUNT = CONTCOUNT + 1
+4070       RESULTS(TOKEN) = RESULTS(TOKEN) + 1
+4080   NEXT
+4090 NEXT
+4100 RETURN
 
-4175 IF CONTCOUNT <> 1 THEN GOTO 4185
-4180 PRINT STR$(CONTCOUNT) + " continent"
-4181 GOTO 4190
-4185 PRINT STR$(CONTCOUNT) + " continents"
-4190 FOR I = 0 TO 26
-4200 IF RESULTS(I) = 0 THEN GOTO 4220
-4210 PRINT STR$(RESULTS(I))
-4220 NEXT
-4230 RETURN
+5000 ' Prints the number of continents and thier sizes
+5001 ' relies on: RESULTS - array for continent count results
+5002 '            CONTCOUNT - count for the number of continents
+5003 IF CONTCOUNT <> 1 THEN GOTO 5030
+5010   PRINT STR$(CONTCOUNT) + " continent"
+5020   GOTO 5040
+5030 ' ELSE
+5031   PRINT STR$(CONTCOUNT) + " continents"
+5040 ' END IF
+5041 FOR X5000 = 0 TO 26
+5050   IF RESULTS(X5000) = 0 THEN GOTO 5070
+5060     PRINT STR$(RESULTS(X5000))
+5070 NEXT
+5080 PRINT
+5090 RETURN
 
 6000 ' replace adjacent squares matching a character to another character
 6001 ' relies on: SOURCE$ - character that is being expanded
