@@ -1,0 +1,12 @@
+Arabic numeral to Roman numeral converter program.
+
+Instructions:
+i.    Download and install JBoss
+ii.   Download and install MySQL
+iii.  Run the mysql setup script provided in the bin directory
+iv.   Run the jboss setup script provided in the bin directory
+v.    Compile the application
+vi.   Copy the ear file into the JBoss deploy directory
+vii.  Start JBoss
+viii. Run the program using the client jar
+
