@@ -19,9 +19,9 @@ class Point
     sz = 0
     while (sz != ret_list.size)
       sz = ret_list.size
-      l.each {|i|
+      l.each do |i|
         ret_list.push(i) if !ret_list.include?(i) && ret_list.any? {|j| j.adj?(i) }
-      }
+      end
     end
     ret_list
   end
@@ -58,11 +58,11 @@ class Map
     @sizes = Array.new
 
     points = Array.new
-    0.upto(@map.length - 1) {|y|
-      0.upto(@map[y].length - 1) { |x|
+    0.upto(@map.length - 1) do |y|
+      0.upto(@map[y].length - 1) do |x|
         points.push(Point.new(x, y)) if land?(x, y)
-      }
-    }
+      end
+    end
 
     while (!points.empty?)
       point = points.pop
