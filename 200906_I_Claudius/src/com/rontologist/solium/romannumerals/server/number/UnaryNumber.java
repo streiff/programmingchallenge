@@ -12,4 +12,12 @@ public class UnaryNumber extends AbstractNumber<UnaryNumeral> {
         }
         return value;
     }
+
+    public UnaryNumber subtract(UnaryNumber n) {
+        return new UnaryNumber(
+                new LinkedList<UnaryNumeral>(n.getNumerals().subList(
+                        n.getValue(), n.getNumerals().size())
+                )
+        );
+    }
 }

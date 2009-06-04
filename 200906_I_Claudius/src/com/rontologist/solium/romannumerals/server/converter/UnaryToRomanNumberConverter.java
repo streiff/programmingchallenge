@@ -16,23 +16,18 @@ public class UnaryToRomanNumberConverter implements NumberConverter<UnaryNumber,
     public RomanNumber convert(UnaryNumber number) {
         NumeralFactory<RomanNumeral> factory = NumeralFactoryFactory.getInstance().createFactory(RomanNumeral.class);
 
-        List<UnaryNumeral> unaryNumerals = new LinkedList<UnaryNumeral>(number.getNumerals());
         List<RomanNumeral> romanNumerals = new LinkedList<RomanNumeral>();
 
-        while (!unaryNumerals.isEmpty()) {
-            // convert as much as possible
-            for (int i = unaryNumerals.size(); i > 0; --i) {
-                List<UnaryNumeral> numeralAttemptList = unaryNumerals.subList(0, i);
-                UnaryNumber numberAttempt = new UnaryNumber();
-                numberAttempt.setNumerals(numeralAttemptList);
-
+        while (number.getValue() > 0) {
+            UnaryNumber numberAttempt = new UnaryNumber(unaryNumerals);
+            while (numberAttempt.getValue() > 0) {
                 RomanNumeral romanNumeral = factory.getNumeral(numberAttempt.getValue());
-
                 if (romanNumeral != null) {
                     romanNumerals.add(romanNumeral);
-                    unaryNumerals = unaryNumerals.subList(i, unaryNumerals.size());
+                    number = number.subtract(numberAttempt);
                     break;
                 }
+                numberAttempt = numberAttempt.subtract(UnaryNumber.ONE);
             }
         }
 
