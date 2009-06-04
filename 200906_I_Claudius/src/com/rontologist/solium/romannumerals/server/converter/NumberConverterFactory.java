@@ -14,10 +14,11 @@ public class NumberConverterFactory {
     }
 
 
+    @SuppressWarnings({"unchecked"})
     public <T extends Number, U extends Number>
-    NumberConverter getConverter(Class<T> src, Class<U> dest) {
+    NumberConverter<T, U> getConverter(Class<T> src, Class<U> dest) {
         if (src.equals(UnaryNumber.class) && dest.equals(RomanNumber.class)) {
-            return new UnaryToRomanNumberConverter();
+            return (NumberConverter<T, U>) new UnaryToRomanNumberConverter();
         } else {
             throw new RuntimeException("Don't know how to convert between " +
                 src.getName() + " and " + dest.getName());

@@ -11,17 +11,12 @@ public class Main {
 
     public static void main(String[] args) {
         UnaryNumber number = new UnaryNumber();
-        number.setNumerals(
-                Arrays.asList(
-                        UnaryNumeral.getInstance(),
-                        UnaryNumeral.getInstance(),
-                        UnaryNumeral.getInstance(),
-                        UnaryNumeral.getInstance()
-                )
-        );
+        UnaryNumeral[] numerals = new UnaryNumeral[1888];
+        Arrays.fill(numerals, UnaryNumeral.getInstance());
+        number.setNumerals(Arrays.asList(numerals));
 
         NumberConverterFactory numberConverterFactory = NumberConverterFactory.getInstance();
-        NumberConverter converter = numberConverterFactory.getConverter(UnaryNumber.class, RomanNumber.class);
+        NumberConverter<UnaryNumber, RomanNumber> converter = numberConverterFactory.getConverter(UnaryNumber.class, RomanNumber.class);
         Number number2 = converter.convert(number);
 
         System.out.println(number2.getRepresentation());
