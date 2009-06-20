@@ -10,10 +10,9 @@ import java.util.Arrays;
 public class Main {
 
     public static void main(String[] args) {
-        UnaryNumber number = new UnaryNumber();
         UnaryNumeral[] numerals = new UnaryNumeral[1888];
         Arrays.fill(numerals, UnaryNumeral.getInstance());
-        number.setNumerals(Arrays.asList(numerals));
+        UnaryNumber number = new UnaryNumber(Arrays.asList(numerals));
 
         NumberConverterFactory numberConverterFactory = NumberConverterFactory.getInstance();
         NumberConverter<UnaryNumber, RomanNumber> converter = numberConverterFactory.getConverter(UnaryNumber.class, RomanNumber.class);

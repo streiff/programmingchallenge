@@ -1,10 +1,18 @@
 Arabic numeral to Roman numeral converter program.
 
+Note:
+    $PJ_HOME is the directory this readme file is in
+    $JNOSS_HOME is the JBoss directory
+    
 Instructions:
-i.    Download and install JBoss
-ii.   Download and install MySQL
-iii.  Run the mysql setup script provided in the bin directory
-iv.   Run the jboss setup script provided in the bin directory
+i.    Download and install JBoss 5.1 GA(http://www.jboss.org/jbossas/downloads/)
+ii.   Restore a copy of the hsql db into the dqta directory:
+        mkdir $JBOSS_HOME/server/default/cust_data
+        cp $PJ_HOME/db/* $JBOSS_HOME/server/default/cust_data
+
+        Note: You can also try to create the db from scratch if you
+              like. The two scripts that were used to create this
+              are located in the $PJ_HOME/script directory
 v.    Compile the application
 vi.   Copy the ear file into the JBoss deploy directory
 vii.  Start JBoss
