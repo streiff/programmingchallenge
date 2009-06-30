@@ -1,7 +1,10 @@
 package com.rontologist.solium.romannumerals.common.ejb;
-import javax.ejb.*;
+
+import com.rontologist.solium.romannumerals.server.number.RomanNumber;
+
+import javax.ejb.Remote;
 
 @Remote
 public interface NumberRemote {
-    String echo(String s);
+    RomanNumber getRomanNumber(String s);
 }
