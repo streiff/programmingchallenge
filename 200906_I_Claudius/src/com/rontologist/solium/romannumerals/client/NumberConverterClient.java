@@ -30,6 +30,11 @@ public class NumberConverterClient {
 	    return;
 	}
 
+	if (number < 1 || number > 3999) {
+	    System.err.print("Number must be between 1 and 3999 inclusive");
+	    return;
+	}
+
 	try {
 	    String romanNumeral = doRESTCall(number, System.err);
 	    if (romanNumeral != null) {

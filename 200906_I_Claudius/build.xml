@@ -1,4 +1,4 @@
-<project name="RomanNumerals" default="dist" basedir=".">
+<project name="RomanNumerals" default="deploy" basedir=".">
     <property name="src.dir" location="src" />
     <property name="build.dir" location="build" />
     <property name="dist.dir" location="dist" />
@@ -29,5 +29,8 @@
 
     <target name="dist" depends="compile">
 
+    </target>
+
+    <target name="deploy" depends="dist">
     </target>
 </project>
