@@ -2,7 +2,7 @@
 ; Written with the CLISP Lisp interpreter, and uses its way of accessing
 ; command line arguments.
 ;
-; This is pure lisp -- no variables at all. :D
+; No variables were harmed (or changed) in the creation of this program.
 
 ; ----------------------------------------------------------------------------
 ; Character manipulation
@@ -62,12 +62,16 @@
     (error "~A~%" "Requires one command line argument with a single character.")
 )
 
+(defun is-letter (x)
+    (if (and (char>= (char-upcase x) #\A) (char<= (char-upcase x) #\Z))
+        1
+        nil
+    )
+)
+
 (defun command-arg-char ()
-    (if (eql 1 (length *args*))
-        (if (eql 1 (length (car *args*)))
-            (char-upcase (char (car *args*) 0))
-            (usage-error)
-        )
+    (if (and (eql 1 (length *args*)) (eql 1 (length (car *args*))) (is-letter (char (car *args*) 0)))
+        (char-upcase (char (car *args*) 0))
         (usage-error)
     )
 )
