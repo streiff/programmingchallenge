@@ -27,10 +27,8 @@
     )
 )
     
-(defun outter-space (x y) (- (- (length y) (position x y)) 1))
-(defun inner-space (x y)
-    (- (* 2 (- (length y) 1)) (* 2(outter-space x y)) 1)
-)
+(defun outter-space (x y) (- (length y) (position x y) 1))
+(defun inner-space (x y) (- (* 2 (- (length y) 1)) (* 2 (outter-space x y)) 1))
 
 ; ----------------------------------------------------------------------------
 ; Diamond formatters
