@@ -70,7 +70,10 @@
 )
 
 (defun command-arg-char ()
-    (if (and (eql 1 (length *args*)) (eql 1 (length (car *args*))) (is-letter (char (car *args*) 0)))
+    (if (and 
+            (eql 1 (length *args*)) 
+            (eql 1 (length (car *args*))) 
+            (is-letter (char (car *args*) 0)))
         (char-upcase (char (car *args*) 0))
         (usage-error)
     )
