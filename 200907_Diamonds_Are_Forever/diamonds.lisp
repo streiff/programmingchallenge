@@ -27,8 +27,8 @@
     )
 )
     
-(defun outter-space (x y) (- (length y) (position x y) 1))
-(defun inner-space (x y) (- (* 2 (- (length y) 1)) (* 2 (outter-space x y)) 1))
+(defun outer-space (x y) (- (length y) (position x y) 1))
+(defun inner-space (x y) (- (* 2 (- (length y) 1)) (* 2 (outer-space x y)) 1))
 
 ; ----------------------------------------------------------------------------
 ; Diamond formatters
@@ -38,11 +38,11 @@
             (concatenate 'string (whitespace (- (length y) 1)) 
                                  (string x) 
                                  (whitespace (- (length y) 1)))
-            (concatenate 'string (whitespace (outter-space x y)) 
+            (concatenate 'string (whitespace (outer-space x y)) 
                                  (string x) 
                                  (whitespace (inner-space x y)) 
                                  (string x) 
-                                 (whitespace (outter-space x y)))
+                                 (whitespace (outer-space x y)))
         )
     )
 )
