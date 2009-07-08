@@ -33,16 +33,13 @@
 ; ----------------------------------------------------------------------------
 ; Diamond formatters
 (defun format-diamond-line (x y) 
-    (format nil "~A~%"
+    (format nil "~{~A~}~%"
         (if (eql x #\A)
-            (concatenate 'string (whitespace (- (length y) 1)) 
-                                 (string x) 
-                                 (whitespace (- (length y) 1)))
-            (concatenate 'string (whitespace (outer-space x y)) 
-                                 (string x) 
-                                 (whitespace (inner-space x y)) 
-                                 (string x) 
-                                 (whitespace (outer-space x y)))
+            (layer (list (whitespace (- (length y) 1))
+                            (string x)))
+            (layer (list (whitespace (outer-space x y))
+                            (string x)
+                            (list (whitespace (inner-space x y)))))
         )
     )
 )
@@ -58,6 +55,13 @@
 
 ; ----------------------------------------------------------------------------
 ; Util functions
+(defun layer (l)
+  (if (eq (length l) 1)
+      (car l)
+      (concatenate 'list (car l) (layer (cdr l)) (car l))
+  )
+)
+
 (defun usage-error ()
     (error "~A~%" "Requires one command line argument with a single character.")
 )
