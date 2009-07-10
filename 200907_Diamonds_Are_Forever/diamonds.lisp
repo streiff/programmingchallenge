@@ -22,7 +22,7 @@
         (format nil (format nil "~~~dd~~d~~~dd~~d~~%" (outer-space x y) 
                                                       (inner-space x y)) 
                     #\Space (string x) #\Space (string x))
-        )
+    )
 )
 
 (defun format-diamond (x y)
