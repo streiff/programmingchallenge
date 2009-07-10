@@ -1,5 +1,4 @@
 #!/usr/bin/clisp
-
 ; ----------------------------------------------------------------------------
 ; Character manipulation
 (defun add-char (x y) (code-char (+ (char-code x) y)))
@@ -8,11 +7,10 @@
 
 ; ----------------------------------------------------------------------------
 ; Character list generators
-(defun all-chars (x) (reverse (all-chars-rev x)))
-(defun all-chars-rev (x) 
+(defun all-chars (x) 
     (if (eql x #\A) 
         (list x) 
-        (cons x (all-chars-rev (prev-char x)))
+        (append (all-chars (prev-char x)) (list x))
     )
 )
 
@@ -42,10 +40,9 @@
 (defun inner-space (x y) (- (* 2 (length y)) (* 2 (outer-space x y)) 1))
 
 (defun command-arg-char ()
-    (if (and 
-            (eql 1 (length *args*)) 
-            (eql 1 (length (car *args*))) 
-            (alpha-char-p (char (car *args*) 0)))
+    (if (and (eql 1 (length *args*)) 
+             (eql 1 (length (car *args*))) 
+             (alpha-char-p (char (car *args*) 0)))
         (char-upcase (char (car *args*) 0))
         (error "~A~%" "Usage: diamonds.lisp [one letter].")
     )
