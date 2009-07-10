@@ -66,18 +66,11 @@
     (error "~A~%" "Requires one command line argument with a single character.")
 )
 
-(defun is-letter (x)
-    (if (and (char>= (char-upcase x) #\A) (char<= (char-upcase x) #\Z))
-        1
-        nil
-    )
-)
-
 (defun command-arg-char ()
     (if (and 
             (eql 1 (length *args*)) 
             (eql 1 (length (car *args*))) 
-            (is-letter (char (car *args*) 0)))
+            (alpha-char-p (char (car *args*) 0)))
         (char-upcase (char (car *args*) 0))
         (usage-error)
     )
