@@ -1,3 +1,4 @@
+#!/usr/bin/clisp
 ; Solium Entry for July 2009. Written in Lisp.
 ; Written with the CLISP Lisp interpreter, and uses its way of accessing
 ; command line arguments.
@@ -19,9 +20,6 @@
         (cons x (all-chars-rev (prev-char x)))
     )
 )
-    
-(defun outer-space (x y) (- (length y) (position x y)))
-(defun inner-space (x y) (- (* 2 (length y)) (* 2 (outer-space x y)) 1))
 
 ; ----------------------------------------------------------------------------
 ; Diamond formatters
@@ -45,13 +43,16 @@
 
 ; ----------------------------------------------------------------------------
 ; Util functions
+(defun outer-space (x y) (- (length y) (position x y)))
+(defun inner-space (x y) (- (* 2 (length y)) (* 2 (outer-space x y)) 1))
+
 (defun command-arg-char ()
     (if (and 
             (eql 1 (length *args*)) 
             (eql 1 (length (car *args*))) 
             (alpha-char-p (char (car *args*) 0)))
         (char-upcase (char (car *args*) 0))
-        (error "~A~%" "Requires one command line argument with a single character.")
+        (error "~A~%" "Usage: diamonds.lisp [one letter].")
     )
 )
 
