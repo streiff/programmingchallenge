@@ -6,15 +6,6 @@
 (defun next-char (x) (add-char x 1))
 
 ; ----------------------------------------------------------------------------
-; Character list generators
-(defun all-chars (x) 
-    (if (eql x #\A) 
-        (list x) 
-        (append (all-chars (prev-char x)) (list x))
-    )
-)
-
-; ----------------------------------------------------------------------------
 ; Diamond formatters
 (defun format-diamond-line (x y) 
     (if (eql x #\A)
@@ -45,6 +36,13 @@
              (alpha-char-p (char (car *args*) 0)))
         (char-upcase (char (car *args*) 0))
         (error "~A~%" "Usage: diamonds.lisp [one letter].")
+    )
+)
+
+(defun all-chars (x) 
+    (if (eql x #\A) 
+        (list x) 
+        (append (all-chars (prev-char x)) (list x))
     )
 )
 
