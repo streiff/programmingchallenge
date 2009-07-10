@@ -37,7 +37,7 @@
 ; ----------------------------------------------------------------------------
 ; Util functions
 (defun outer-space (x y) (- (length y) (position x y)))
-(defun inner-space (x y) (- (* 2 (length y)) (* 2 (outer-space x y)) 1))
+(defun inner-space (x y) (- (* (- (length y) (outer-space x y)) 2) 1))
 
 (defun command-arg-char ()
     (if (and (eql 1 (length *args*)) 
