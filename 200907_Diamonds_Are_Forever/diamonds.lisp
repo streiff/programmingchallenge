@@ -1,9 +1,4 @@
 #!/usr/bin/clisp
-; Solium Entry for July 2009. Written in Lisp.
-; Written with the CLISP Lisp interpreter, and uses its way of accessing
-; command line arguments.
-;
-; No variables were harmed (or changed) in the creation of this program.
 
 ; ----------------------------------------------------------------------------
 ; Character manipulation
