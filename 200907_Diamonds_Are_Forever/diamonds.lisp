@@ -28,7 +28,9 @@
 (defun format-diamond-line (x y) 
     (if (eql x #\A)
         (format nil (format nil "~~~dd~~d~~%" (length y)) #\Space #\A)
-        (format nil (format nil "~~~dd~~d~~~dd~~d~~%" (outer-space x y) (inner-space x y)) #\Space (string x) #\Space (string x))
+        (format nil (format nil "~~~dd~~d~~~dd~~d~~%" (outer-space x y) 
+                                                      (inner-space x y)) 
+                    #\Space (string x) #\Space (string x))
         )
 )
 
@@ -43,13 +45,6 @@
 
 ; ----------------------------------------------------------------------------
 ; Util functions
-(defun layer (l)
-  (if (eq (length l) 1)
-      (car l)
-      (concatenate 'list (car l) (layer (cdr l)) (car l))
-  )
-)
-
 (defun command-arg-char ()
     (if (and 
             (eql 1 (length *args*)) 
