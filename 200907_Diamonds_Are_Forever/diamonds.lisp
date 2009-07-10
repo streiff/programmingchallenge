@@ -19,29 +19,17 @@
         (cons x (all-chars-rev (prev-char x)))
     )
 )
-
-(defun whitespace (x)
-    (if (eql x 0) 
-        ""
-        (concatenate 'string " " (whitespace (- x 1)))
-    )
-)
     
-(defun outer-space (x y) (- (length y) (position x y) 1))
-(defun inner-space (x y) (- (* 2 (- (length y) 1)) (* 2 (outer-space x y)) 1))
+(defun outer-space (x y) (- (length y) (position x y)))
+(defun inner-space (x y) (- (* 2 (length y)) (* 2 (outer-space x y)) 1))
 
 ; ----------------------------------------------------------------------------
 ; Diamond formatters
 (defun format-diamond-line (x y) 
-    (format nil "~{~A~}~%"
-        (if (eql x #\A)
-            (layer (list (whitespace (- (length y) 1))
-                         (string x)))
-            (layer (list (whitespace (outer-space x y))
-                         (string x)
-                         (whitespace (inner-space x y))))
+    (if (eql x #\A)
+        (format nil (format nil "~~~dd~~d~~%" (length y)) #\Space #\A)
+        (format nil (format nil "~~~dd~~d~~~dd~~d~~%" (outer-space x y) (inner-space x y)) #\Space (string x) #\Space (string x))
         )
-    )
 )
 
 (defun format-diamond (x y)
