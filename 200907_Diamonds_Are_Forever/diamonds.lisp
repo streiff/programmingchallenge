@@ -8,12 +8,10 @@
 ; ----------------------------------------------------------------------------
 ; Diamond formatters
 (defun format-diamond-line (x y) 
-    (if (eql x #\A)
-        (format nil (format nil "~~~DA~~A~~%" (outer-space x y)) #\Space #\A)
-        (format nil (format nil "~~~DA~~A~~~DA~~A~~%" (outer-space x y) 
+    (format nil (format nil "~~~DA~~A~[~~~DA~~A~]~~%" (outer-space x y) 
+                                                      (if (eql x #\A) 1 0)
                                                       (inner-space x y)) 
-                    #\Space (string x) #\Space (string x))
-    )
+                #\Space x #\Space x)
 )
 
 (defun format-diamond (x y)
