@@ -9,8 +9,8 @@
 ; Diamond formatters
 (defun format-diamond-line (x y) 
     (if (eql x #\A)
-        (format nil (format nil "~~~dd~~d~~%" (length y)) #\Space #\A)
-        (format nil (format nil "~~~dd~~d~~~dd~~d~~%" (outer-space x y) 
+        (format nil (format nil "~~~DA~~A~~%" (length y)) #\Space #\A)
+        (format nil (format nil "~~~DA~~A~~~DA~~A~~%" (outer-space x y) 
                                                       (inner-space x y)) 
                     #\Space (string x) #\Space (string x))
     )
@@ -35,7 +35,7 @@
              (eql 1 (length (car *args*))) 
              (alpha-char-p (char (car *args*) 0)))
         (char-upcase (char (car *args*) 0))
-        (error "~A~%" "Usage: diamonds.lisp [one letter].")
+        (error "~A~%" "Usage: diamonds.lisp [one letter]")
     )
 )
 
