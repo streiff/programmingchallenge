@@ -1,0 +1,26 @@
+Write a program that, given a series of .'s and -'s, writes out all the
+permutations. Bonus points for marking the ones that are also in the
+dictionary.
+
+e.g.
+...---..-....-
+
+...|---|..-.|..|.-    Sofia
+.|..-|--.|.|-.|..|.-  Eugenia
+
+
+
+Morse code symbols
+A .-            N -.
+B -...          O ---
+C -.-.          P .--.
+D -..           Q --.-
+E .             R .-.
+F ..-.          S ...
+G --.           T -
+H ....          U ..-
+I ..            V ...-
+J .---          W .--
+K -.-           X -..-
+L .-..          Y -.--
+M --            Z --..
