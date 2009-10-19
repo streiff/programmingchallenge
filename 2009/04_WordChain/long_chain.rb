@@ -4,7 +4,6 @@ MAX_TIME = 300
 
 class String
     def adj?(word)
-	# test comment
         0.upto(word.length - 1).inject(0) {|d, i| word[i] != self[i] ? d + 1 : d} == 1
     end
 end
@@ -29,7 +28,7 @@ def find_chain(start_word, end_word, words, end_time)
 
             (words.length - 1).downto(0) {|i|
                 return [] if Time.new > end_time # time limit.
-                is_start_end_chain = results.last == start_word && words[i] == end_word;
+                is_start_end_chain = results.last == start_word && words[i] == end_word
                 if (results.last.adj?(words[i]) && !is_start_end_chain)
                     results.push(words[i])
                     words.delete_at(i)
