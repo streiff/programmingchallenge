@@ -1,0 +1,61 @@
+; Character manipulation ------------------------------------------------------
+(defn add-char [x y] (char (+ (int x) y)))
+(defn prev-char [x] (add-char x -1))
+(defn next-char [x] (add-char x 1))
+
+; Util functions --------------------------------------------------------------
+(defn create-whitespace [x] 
+    (if (= x 0) 
+        "" 
+        (str " " (create-whitespace (- x 1)))
+    )
+)
+
+(defn outer-space [x y] (create-whitespace (- (count y) (- (int x) (int \A)))))
+(defn inner-space [x y] (create-whitespace (- (* (- (int x) (int \A)) 2) 1)))
+
+(defn error [s]
+    (println s)
+    (System/exit 1)
+)
+ 
+(defn command-arg-char []
+     (if (and (= 1 (count *command-line-args*)) 
+              (= 1 (count (first *command-line-args*))) 
+              (Character/isLetter (ffirst *command-line-args*)))
+         (Character/toUpperCase (ffirst *command-line-args*))
+         (error "Usage: diamonds.lisp [one letter]")
+     )
+)
+
+(defn all-chars [x] 
+     (if (= x \A) 
+         (list x) 
+         (concat (all-chars (prev-char x)) (list x))
+     )
+) 
+
+
+; Diamond formatters ----------------------------------------------------------
+(defn format-diamond-line [x y] 
+    (if (= x \A)
+        (str (outer-space x y) x \newline)
+        (str (outer-space x y) x (inner-space x y) x \newline)
+    )
+)
+
+ 
+(defn format-diamond 
+    ([x] (format-diamond \A x))
+    ([x y]
+        (if (= x (last y))
+            (format-diamond-line x y)
+            (str (format-diamond-line x y)
+                 (format-diamond (next-char x) y)
+                 (format-diamond-line x y))
+        )
+    )
+)
+
+; Main script -----------------------------------------------------------------
+(print (format-diamond (all-chars (command-arg-char))))
