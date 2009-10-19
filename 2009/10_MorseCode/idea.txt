@@ -1,0 +1,41 @@
+Think of the morse code as a byte array
+
+...---..-....-
+00011100100001
+
+Match all the first letters you can that match the highest order
+or the array
+
+lock it in, and recurse on the next set of letters
+
+
+----
+algor
+----
+byte_array letters; // byte array of letters a..z
+int[26] letter_len; // length of bytes of each of the letters;
+
+char[] input;
+skip if length(input) == 0 || not morse code
+
+byte_array[] binput = convert_to_byte_array(input);
+char[][] words;
+set byte_ptr = 0;
+
+find_words(byte_ptr, '');
+
+fn find_words(byte_ptr, letters) {
+  for l (A..Z) {
+    bin_letter = get_letter(l);
+    if (bin_letter does not match input[byte_ptr]) {
+      reject;
+    }
+    new_ptr = byte_ptr + length(letter);
+    if (new_ptr is end of list) {
+      add(words, letters + l);
+    } else {
+      find_words(new_ptr, letters + l);
+    }
+  }
+}
+
