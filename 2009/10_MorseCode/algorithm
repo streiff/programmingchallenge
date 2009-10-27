@@ -1,0 +1,18 @@
+basic algorithm. It's implmented a little differently from this to add a
+bit of confusion, but this is basically it.
+
+call fn(morse_code_in_bits, dict_check_command)
+
+defun fn(v_input, dict_check, partial_word)
+    cycles letter from a..z
+        if letter matches beginning of v_input
+            if (matches all of v_input && (!dict_check || in_dictionary))
+                print partial_word + letter;
+            else
+                fn(v_input.remove_from_front(length of letter), 
+                   dict_check,  
+                   partial_word + letter)
+            end
+        end
+    end
+end
