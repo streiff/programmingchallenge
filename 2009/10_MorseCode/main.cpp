@@ -162,7 +162,7 @@ uint* create_letter_array() {
     letters['J' - 'A'] = 0x07 << bit_size - 4;
     letters['K' - 'A'] = 0x05 << bit_size - 3;
     letters['L' - 'A'] = 0x04 << bit_size - 4;
-    letters['M' - 'A'] = 0;
+    letters['M' - 'A'] = 0x03 << bit_size - 2;
     letters['N' - 'A'] = 0x02 << bit_size - 2;
     letters['O' - 'A'] = 0x07 << bit_size - 3;
     letters['P' - 'A'] = 0x06 << bit_size - 4;
