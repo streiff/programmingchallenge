@@ -10,18 +10,21 @@
 (defn prepend [prefix list] (map #(str prefix %) list))
 
 (defn decode [morse]
-    (if (= 0 (count morse))
-        '(nil)
-        (flatten (map #(prepend (get letters %) (decode (subs morse (count %)))) (matching-letters morse)))
-    )
+  (if (= 0 (count morse))
+    '(nil)
+    (flatten (map #(prepend (get letters %) (decode (subs morse (count %)))) (matching-letters morse))))
 )
 
-(dorun (map #(print % " ") (decode (first *command-line-args*))))
-(println "\nDictionary words")
-(dorun (map #(print % " ")
-    (intersection
-         (set (map #(.toLowerCase %) (re-seq #"[^\n]+" (slurp "words"))))
-         (set (decode (first *command-line-args*)))
-    )
-))
-(println "\n")
+(if (= (count *command-line-args*) 2)
+  (do
+    (let [words (decode (first *command-line-args*))]
+      (dorun (map #(print % " ") words ))
+      (println "\nDictionary words")
+      (dorun (map #(print % " ")
+        (intersection
+          (set (map #(.toLowerCase %) (re-seq #"[^\n]+" (slurp (first (rest *command-line-args*))))))
+          (set words))))
+      (println)))
+  (do
+    (println "args: <morse> <dict words file>"))
+)
