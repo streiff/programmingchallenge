@@ -1,0 +1,20 @@
+Create a bot that can win a Rock-Paper-Scicors game.
+
+The program is executed like:
+
+
+Start a series of games
+<program> <opponent_name> start
+  - outputs one of {R,P,S}
+
+Middle of a series of games
+<program> <opponent_name> turn <last_opponent_move>
+  - outputs one of {R,P,S}
+
+Last game in the series
+<program> <opponent_name> end <last_opponent_move>
+  - no output. For record keeping only
+
+
+
+
