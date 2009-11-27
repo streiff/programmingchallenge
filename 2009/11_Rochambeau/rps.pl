@@ -6,9 +6,15 @@ use strict;
 use warnings;
 
 use constant WINDOW_SIZES => (1, 5, 10, 25, 50, 75, 100);
+use constant WINDOW_COEFF => { 100 => 1.00, 
+                                75 => 0.95, 
+                                50 => 0.90, 
+                                25 => 0.80, 
+                                10 => 0.75, 
+                                5  => 0.70, 
+                                1  => 0.50 };
 use constant LOSS_MOVES => { "S" => "R", "P" => "S", "R" => "P"}; 
-use constant ACCEPTABLE_CHANCE => 0.5;
-use constant SZ => 50;
+use constant SZ => 100;
 use constant DATA_FILE => "dt_ron.dd";
 
 #####################################################################
@@ -37,7 +43,10 @@ sub doGuess {
     push @guesses, {guess => modGuess(scalar(@{$stats})), chance => (1/3), size => 0};
     foreach my $size (WINDOW_SIZES) {
         my $guess = predict($stats, $size);
-        push @guesses, $guess if defined($guess);
+        if (defined($guess)) {
+            $guess->{chance} = $guess->{chance} * WINDOW_COEFF->{$size};
+            push @guesses, $guess;
+        }
     }
 
     (sort {$b->{chance} <=> $a->{chance} || $b->{size} <=> $a->{size}} @guesses) [0]->{guess};
@@ -80,7 +89,7 @@ sub predict {
             }
         }
         my $chance = $largest_value / $num_predictions;
-        return {guess => LOSS_MOVES->{$largest_key}, chance => $chance, size => $size} if $chance > ACCEPTABLE_CHANCE;
+        return {guess => LOSS_MOVES->{$largest_key}, chance => $chance, size => $size};
     }
     return;
 }
@@ -133,7 +142,15 @@ sub listEq {
 }
 
 #####################################################################
-sub modGuess {("S", "P", "R", "P", "R", "S")[$_[0] % 6]}
+sub modGuess {(
+"P", "R", "R", "R", "P", "P", "P", "R", "P", "R", "S", "P", "S", "S", "R", 
+"P", "R", "P", "P", "R", "S", "P", "P", "P", "S", "S", "P", "R", "P", "R", 
+"R", "P", "S", "R", "R", "R", "S", "P", "S", "R", "S", "P", "S", "R", "R", 
+"P", "R", "S", "S", "S", "S", "R", "R", "R", "S", "P", "R", "P", "P", "P", 
+"R", "R", "S", "P", "S", "R", "R", "P", "R", "P", "S", "S", "P", "S", "R", 
+"S", "S", "R", "R", "S", "P", "R", "S", "S", "R", "R", "P", "S", "P", "R", 
+"P", "S", "R", "R", "R", "S", "P", "S", "P", "R")[$_[0] % 100]}
+
 
 #####################################################################
 die "Invalid args" if (scalar(@ARGV) < 2);
