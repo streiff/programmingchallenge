@@ -16,6 +16,7 @@ use constant WINDOW_COEFF => { 100 => 1.00,
 use constant LOSS_MOVES => { "S" => "R", "P" => "S", "R" => "P"}; 
 use constant SZ => 100;
 use constant DATA_FILE => "dt_ron.dd";
+use constant PI_FILENAME => "num.txt";
 
 #####################################################################
 sub readStats {
@@ -40,7 +41,7 @@ sub doGuess {
     my $stats = shift;
     my @guesses;
 
-    push @guesses, {guess => modGuess(scalar(@{$stats})), chance => (1/3), size => 0};
+    push @guesses, {guess => piGuess(scalar(@{$stats})), chance => (1/3), size => 0};
     foreach my $size (WINDOW_SIZES) {
         my $guess = predict($stats, $size);
         if (defined($guess)) {
@@ -142,15 +143,34 @@ sub listEq {
 }
 
 #####################################################################
-sub modGuess {(
-"P", "R", "R", "R", "P", "P", "P", "R", "P", "R", "S", "P", "S", "S", "R", 
-"P", "R", "P", "P", "R", "S", "P", "P", "P", "S", "S", "P", "R", "P", "R", 
-"R", "P", "S", "R", "R", "R", "S", "P", "S", "R", "S", "P", "S", "R", "R", 
-"P", "R", "S", "S", "S", "S", "R", "R", "R", "S", "P", "R", "P", "P", "P", 
-"R", "R", "S", "P", "S", "R", "R", "P", "R", "P", "S", "S", "P", "S", "R", 
-"S", "S", "R", "R", "S", "P", "R", "S", "S", "R", "R", "P", "S", "P", "R", 
-"P", "S", "R", "R", "R", "S", "P", "S", "P", "R")[$_[0] % 100]}
+sub piGuess {
+  my $num = 3.1415926535;
+  my $try = 0;
+  if (open (NUM_FILE, "<" . PI_FILENAME)) {
+    $num = <NUM_FILE> || 3.1415926535;
+    $try = <NUM_FILE> || 0;
+    close NUM_FILE;
+  }
+  chomp($num);
+  chomp($try);
+  $num =~ s/\D|9//g;
 
+  if ($try >= length($num)) {
+    $try = 0;
+    $num *= 2;
+  }
+  my @nums = split("", $num);
+  my $index = $nums[$try] % 3;
+
+  $try++;
+  open (NUM_FILE, ">" . PI_FILENAME);
+  print NUM_FILE "$num\n";
+  print NUM_FILE "$try\n";
+  close NUM_FILE;
+  
+  my @arr = ("R", "P", "S");
+  $arr[$index];
+}
 
 #####################################################################
 die "Invalid args" if (scalar(@ARGV) < 2);
