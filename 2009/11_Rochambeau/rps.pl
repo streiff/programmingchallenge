@@ -14,7 +14,7 @@ use constant WINDOW_COEFF => { 100 => 1.00,
                                 5  => 0.70, 
                                 1  => 0.50 };
 use constant LOSS_MOVES => { "S" => "R", "P" => "S", "R" => "P"}; 
-use constant SZ => 100;
+use constant SZ => 10000;
 use constant DATA_FILE => "dt_ron.dd";
 use constant PI_FILENAME => "num.txt";
 
