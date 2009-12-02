@@ -154,10 +154,11 @@ sub piGuess {
   chomp($num);
   chomp($try);
   $num =~ s/\D|9//g;
+  $num =~ s/0$|//g;
 
   if ($try >= length($num)) {
     $try = 0;
-    $num *= 2;
+    $num *= 2.71828183;
   }
   my @nums = split("", $num);
   my $index = $nums[$try] % 3;
