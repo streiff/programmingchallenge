@@ -7,14 +7,14 @@ use warnings;
 
 use constant WINDOW_SIZES => (1, 5, 10, 25, 50, 75, 100);
 use constant WINDOW_COEFF => { 100 => 1.00, 
-                                75 => 0.95, 
-                                50 => 0.90, 
-                                25 => 0.85, 
-                                10 => 0.75, 
-                                5  => 0.65, 
-                                1  => 0.50 };
+                                75 => 0.98, 
+                                50 => 0.94, 
+                                25 => 0.90, 
+                                10 => 0.80, 
+                                5  => 0.70, 
+                                1  => 0.60 };
 use constant LOSS_MOVES => { "S" => "R", "P" => "S", "R" => "P"}; 
-use constant SZ => 10000;
+use constant SZ => 75;
 use constant TMP_DIR => "/tmp/ronrps";
 use constant DATA_FILE => "/tmp/ronrps/dt_";
 use constant PI_FILENAME => "/tmp/ronrps/num.txt";
@@ -50,7 +50,7 @@ sub doGuess {
     my $stats = shift;
     my @guesses;
 
-    push @guesses, {guess => piGuess(scalar(@{$stats})), chance => (1/3), size => 0};
+    push @guesses, {guess => piGuess(scalar(@{$stats})), chance => (1/3*0.87), size => 0};
     foreach my $size (WINDOW_SIZES) {
         next if ($size < 10 && scalar(@$stats) > 100);
         my $guess = predict($stats, $size);
@@ -164,7 +164,7 @@ sub piGuess {
 
   if ($try >= length($num)) {
     $try = 0;
-    $num *= 2.71828183;
+    $num *= 1.71828183;
   }
   my @nums = split("", $num);
   my $index = $nums[$try] % 3;
