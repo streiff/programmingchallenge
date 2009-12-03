@@ -1,0 +1,40 @@
+# high level overview of algorithm
+
+# Simple non-overguessing algorithm. I hope that by not overguessing i will beat simpler
+# programs, and over-guessing ones by not playing thier game. ;)
+
+# Scan the history for patterns matching the last few games (number of games to look at is
+# set by WINDOW_SIZES). For all matches rate them based on the move that followed that pattern.
+# Move based off of the highest rated pattern match, or a generated number based off of pi and
+# e if the confidence factor isn't there.
+
+fn piGuess()
+    guess_number is read from the file, or pi if that does not exist
+    guess_number is cleansed (any character not from 0-8 is removed)
+        9 is not used because 0-8 inclusive provides a multiple of 3 possibilies
+    try_index is read from the file, or 0 if that does not exist
+    if try_index is out of range, guess_number is multiplied by e and try_index set to 0
+    guess_number and try_index is written
+    r, p, or s is chosen depending on the digit of guess_number at try_index
+end
+
+fn predict(stats, window_size)
+    collect the last window_size games as pattern
+    scan stats for all other occurrences of pattern
+    for each of those, peek at the move after them, and rate them based on that move.
+        rating - number of occurrences of a move / number of times the pattern has occurred
+    set the prediction as the move that would beat the highest rated pattern
+    return the prediction and the rating
+end
+
+fn doGuess(stats)
+    for each window_size
+        collect predict(stats, window_size)
+    end
+    return prediction with highest rating, or piGuess if that rating is too low
+end
+
+read stats from file
+doGuess(stats)
+add to stats file
+print guess

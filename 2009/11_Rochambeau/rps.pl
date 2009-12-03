@@ -9,9 +9,9 @@ use constant WINDOW_SIZES => (1, 5, 10, 25, 50, 75, 100);
 use constant WINDOW_COEFF => { 100 => 1.00, 
                                 75 => 0.95, 
                                 50 => 0.90, 
-                                25 => 0.80, 
+                                25 => 0.85, 
                                 10 => 0.75, 
-                                5  => 0.70, 
+                                5  => 0.65, 
                                 1  => 0.50 };
 use constant LOSS_MOVES => { "S" => "R", "P" => "S", "R" => "P"}; 
 use constant SZ => 10000;
