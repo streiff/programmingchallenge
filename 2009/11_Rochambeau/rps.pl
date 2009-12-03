@@ -15,8 +15,9 @@ use constant WINDOW_COEFF => { 100 => 1.00,
                                 1  => 0.50 };
 use constant LOSS_MOVES => { "S" => "R", "P" => "S", "R" => "P"}; 
 use constant SZ => 10000;
-use constant DATA_FILE => "dt_ron.";
-use constant PI_FILENAME => "num.txt";
+use constant TMP_DIR => "/tmp/ronrps";
+use constant DATA_FILE => "/tmp/ronrps/dt_";
+use constant PI_FILENAME => "/tmp/ronrps/num.txt";
 
 #####################################################################
 sub readStats {
@@ -179,6 +180,7 @@ sub piGuess {
 }
 
 #####################################################################
+mkdir (TMP_DIR) unless (-d TMP_DIR);
 die "Invalid args" if (scalar(@ARGV) < 2);
 my $opponent = $ARGV[0];
 my $mode = $ARGV[1];
