@@ -15,24 +15,32 @@ use constant WINDOW_COEFF => { 100 => 1.00,
                                 1  => 0.50 };
 use constant LOSS_MOVES => { "S" => "R", "P" => "S", "R" => "P"}; 
 use constant SZ => 10000;
-use constant DATA_FILE => "dt_ron.dd";
+use constant DATA_FILE => "dt_ron.";
 use constant PI_FILENAME => "num.txt";
 
 #####################################################################
 sub readStats {
-  local $/ = undef;
-  open (FILE, "<" . DATA_FILE) || return {};
-  my $data = <FILE>;
+  my $opp = shift;  
+  open (FILE, "<" . DATA_FILE . $opp) || return ();
+  my @stats;
+  while (<FILE>) {
+    chomp;
+    my @game =  split("", $_);
+    push @stats, \@game;
+  }
   close (FILE);
-  return eval($data);
+  return \@stats;
 }
 
 #####################################################################
 sub writeStats {
-  open(FILE, ">" . DATA_FILE);
-  local $Data::Dumper::Terse = 1;
-  local $Data::Dumper::Useqq = 1;
-  print FILE Dumper(shift);
+  my $stats = shift;
+  my $opp = shift;  
+
+  open(FILE, ">" . DATA_FILE . $opp);
+  foreach my $game (@$stats) {
+    print FILE join("", @$game), "\n";
+  }
   close(FILE);
 }
 
@@ -43,6 +51,7 @@ sub doGuess {
 
     push @guesses, {guess => piGuess(scalar(@{$stats})), chance => (1/3), size => 0};
     foreach my $size (WINDOW_SIZES) {
+        next if ($size < 10 && scalar(@$stats) > 100);
         my $guess = predict($stats, $size);
         if (defined($guess)) {
             $guess->{chance} = $guess->{chance} * WINDOW_COEFF->{$size};
@@ -98,32 +107,28 @@ sub predict {
 #####################################################################
 sub addLastStat {
     my $stats = shift;
-    my $opponent = shift;
     my $opp_guess = shift;
-    die "I didn't start the game yet" unless $stats->{$opponent};
 
-    my $last_game_pos = scalar(@{$stats->{$opponent}}) - 1;
-    if (scalar(@{$stats->{$opponent}[$last_game_pos]}) == 2) {
+    my $last_game_pos = scalar(@{$stats}) - 1;
+    if (scalar(@{$stats}[$last_game_pos]) == 2) {
         die "last game already has an ending move";
     }
 
-    $stats->{$opponent}[$last_game_pos][1] = $opp_guess;
+    $stats->[$last_game_pos][1] = $opp_guess;
 }
 
 #####################################################################
 sub addCurrentStat {
     my $stats = shift;
-    my $opponent = shift;
     my $guess = shift;
 
-    $stats->{$opponent} = () unless $stats->{$opponent};
-    my $last_game_pos = scalar(@{$stats->{$opponent}}) - 1;
+    my $last_game_pos = scalar(@{$stats}) - 1;
 
-    if ($last_game_pos >= 0 && scalar(@{$stats->{$opponent}[$last_game_pos]}) == 1) {
+    if ($last_game_pos >= 0 && scalar(@{$stats}[$last_game_pos]) == 1) {
         die "last game not finished yet";
     }
   
-    push @{$stats->{$opponent}}, [$guess];
+    push @{$stats}, [$guess];
 }
 
 #####################################################################
@@ -178,18 +183,19 @@ die "Invalid args" if (scalar(@ARGV) < 2);
 my $opponent = $ARGV[0];
 my $mode = $ARGV[1];
 my $last_move = ($mode eq "turn" || $mode eq "finish") ? $ARGV[2] : undef;
-my $stats = readStats();
+my $stats = readStats($opponent);
 
-$stats->{$opponent} = [] unless $stats->{$opponent};
+
+$stats = [] unless $stats;
 
 if ($mode eq "turn" || $mode eq "finish") {
-    addLastStat($stats, $opponent, $last_move);
+    addLastStat($stats, $last_move);
 }
 
 if ($mode ne "finish") {
-    my $guess = doGuess($stats->{$opponent});
-    addCurrentStat($stats, $opponent, $guess);
+    my $guess = doGuess($stats);
+    addCurrentStat($stats, $guess);
     print $guess, "\n";
 }
 
-writeStats($stats);
+writeStats($stats, $opponent);
