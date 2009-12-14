@@ -26,6 +26,8 @@
     return count;
 }
 
+// algorithm adapted from 
+// Kenneth H. Rosen - Discrete Mathematics and Its Applications
 - (const int*) nextPermutation {
     int i;
 
@@ -46,12 +48,12 @@
     int temp;
     int large = size - 2;
     while (indexList[large] > indexList[large+1]) {
-      large--;
+        large--;
     }
 
     int small = size - 1;
     while (indexList[large] > indexList[small]) {
-      small--;
+        small--;
     }
 
     temp = indexList[small];
@@ -62,16 +64,15 @@
     int s = large + 1;
 
     while (r > s) {
-      temp = indexList[s];
-      indexList[s] = indexList[r];
-      indexList[r] = temp;
-      r--;
-      s++;
+        temp = indexList[s];
+        indexList[s] = indexList[r];
+        indexList[r] = temp;
+        r--;
+        s++;
     }
 
     ++currentIndex;
     return indexList;
-
 }
 
 - free {
@@ -80,6 +81,4 @@
     }
     return [super free];
 }
-
-
 @end

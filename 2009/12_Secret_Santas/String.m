@@ -20,7 +20,6 @@
 - (void) chomp {
     while (len > 0 && (
             cStr[len - 1] == '\r'  ||
-            cStr[len - 1] == '\l'  ||
             cStr[len - 1] == '\n')) {
         cStr[len - 1] = '\0';
         --len;

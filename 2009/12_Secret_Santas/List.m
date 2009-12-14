@@ -35,8 +35,8 @@
 - free {
     struct objc_list* cell = head;
     while (cell) {
-      [(Object*) cell->head free];
-      cell = cell->tail;
+        [(Object*) cell->head free];
+        cell = cell->tail;
     }
     list_free(head);
     return [super free];

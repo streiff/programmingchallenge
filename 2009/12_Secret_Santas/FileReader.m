@@ -16,7 +16,7 @@
     char line[1024];
 
     if (endOfFile) {
-      return nil;
+        return nil;
     }
 
     if (file == NULL) {
@@ -42,7 +42,7 @@
 
 - free {
     if (filename) {
-      [filename free];
+        [filename free];
     }
     return [super free];
 }
