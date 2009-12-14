@@ -1,18 +1,14 @@
 #import <stdio.h>
 
-#import "FileReader.h"
-#import "String.h"
+#import "FileReader.h" 
 #import "List.h"
+#import "Person.h"
 #import "PermutationGenerator.h"
+#import "String.h"
 
-void printLine2(Object* obj) {
-    printf("[%s]", (char*) [(String*) obj cStr]);
-}
 
 void printLine1(Object* obj) {
-    [(List*) obj each: &printLine2];
-    printf("\n");
-
+    printf("%s \n", [[(Person*) obj toString] cStr]);
 }
 
 int main(const int argc, const char *argv[]) {
@@ -28,23 +24,18 @@ int main(const int argc, const char *argv[]) {
     String *line;
     while ((line = [read readLine]) != nil) {
         List *data = [line split: ' '];
-        [list push: data];
+        if ([data length] != 3) {
+            printf("Error: Data file invalid. Line %s\n", [line cStr]);
+            return -1;
+        }
+        Person *person = [[Person alloc] initWithFirstName: [(String*) [data at: 2] deepCopy]
+                                         lastName:  [(String*) [data at: 1] deepCopy]
+                                         email:  [(String*) [data at: 0] deepCopy]];
+        [list push: person];
     }
 
     [list each:&printLine1];
-
-    PermutationGenerator* gen = [[PermutationGenerator alloc] initWithSize: 4];
-    printf("perms\n");
-    int i, j;
-
-    const int* perm;
-    while ((perm  = [gen nextPermutation]) != NULL) {
-        for (j = 0; j < 4; ++j) {
-            printf(" %i", perm[j]);
-        }
-        printf("\n");
-    }
-
+    [list free];
 
     return 0;
 }

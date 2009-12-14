@@ -5,8 +5,9 @@ all: clean
 	gcc $(CFLAGS) -c FileReader.m
 	gcc $(CFLAGS) -c List.m
 	gcc $(CFLAGS) -c PermutationGenerator.m
+	gcc $(CFLAGS) -c Person.m
 	gcc $(CFLAGS) -c main.m
-	gcc $(CFLAGS) -lobjc main.o FileReader.o String.o List.o PermutationGenerator.o -o main
+	gcc $(CFLAGS) -lobjc main.o FileReader.o String.o List.o PermutationGenerator.o Person.o -o main
 
 clean:
 	rm -f main

@@ -11,7 +11,9 @@
 - (char*) cStr;
 - (int) length;
 - (void) chomp;
+- (void) append: (String*) str;
 - (List*) split: (char) delim;
 - free;
++ (String*) concatenate: (int) count, ...;
 
 @end

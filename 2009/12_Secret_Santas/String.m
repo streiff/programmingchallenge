@@ -57,13 +57,37 @@
 
     return list;
 }
+
+- (void) append: (String*) str {
+    int newLen = strlen(cStr) + strlen([str cStr]);
+    char* newCStr = objc_malloc(sizeof(char) * (newLen + 1));
+    strncpy(newCStr, cStr, len);
+    strncpy(newCStr + len, [str cStr], [str length]);
+    newCStr[newLen] = '\0';
+
+    objc_free(cStr);
+    cStr = newCStr;
+    len = newLen;
+}
+
 - deepCopy {
     return [[String alloc] initWithCString: [self cStr]];
 }
 
-
 - free {
     objc_free((char*) cStr);
     return [super free];
+}
+
++ (String*) concatenate: (int) count, ... {
+    va_list args;
+    int i;
+    va_start(args, count);
+
+    String* result = [[String alloc] initWithCString: ""];
+    for (i = 0; i < count; ++i) {
+        [result append: va_arg(args, String*)];
+    }
+    return result;
 }
 @end
