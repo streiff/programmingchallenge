@@ -3,7 +3,7 @@
 #import "FileReader.h"
 #import "String.h"
 #import "List.h"
-#import "Permutations.h"
+#import "PermutationGenerator.h"
 
 void printLine2(Object* obj) {
     printf("[%s]", (char*) [(String*) obj cStr]);
@@ -32,6 +32,19 @@ int main(const int argc, const char *argv[]) {
     }
 
     [list each:&printLine1];
+
+    PermutationGenerator* gen = [[PermutationGenerator alloc] initWithSize: 4];
+    printf("perms\n");
+    int i, j;
+
+    const int* perm;
+    while ((perm  = [gen nextPermutation]) != NULL) {
+        for (j = 0; j < 4; ++j) {
+            printf(" %i", perm[j]);
+        }
+        printf("\n");
+    }
+
 
     return 0;
 }
