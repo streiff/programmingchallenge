@@ -7,45 +7,27 @@
     self = [super init];    
     size = sz;
     indexList = NULL;   
-    currentIndex = 0;
+    noMoreResults = sz <= 0;
     return self;
 }
 
-- (int) permutationCount {
-    int i;
-    int count;
-
-    if (size < 1) {
-        return -1;
-    }
-
-    count = 1;
-    for (i = size; i > 0; --i) {
-        count *= i;
-    }
-    return count;
-}
-
-// algorithm adapted from 
+// algorithm adapted from:
 // Kenneth H. Rosen - Discrete Mathematics and Its Applications
 - (const int*) nextPermutation {
-    int i;
+    if (noMoreResults) {
+        return NULL;
+    }
 
-    if (currentIndex == 0) {
+    int i;
+    if (indexList == NULL) {
         indexList = objc_malloc(sizeof(int) * (size));
 
         for (i = 0; i < size; ++i) {
             indexList[i] = i;
         }
-        ++currentIndex;
         return indexList;
     }
 
-    if (currentIndex >= [self permutationCount]) {
-        return NULL;
-    }
-
-    int temp;
     int large = size - 2;
     while (indexList[large] > indexList[large+1]) {
         large--;
@@ -56,7 +38,7 @@
         small--;
     }
 
-    temp = indexList[small];
+    int temp = indexList[small];
     indexList[small] = indexList[large];
     indexList[large] = temp;
 
@@ -67,12 +49,26 @@
         temp = indexList[s];
         indexList[s] = indexList[r];
         indexList[r] = temp;
-        r--;
-        s++;
+        --r;
+        ++s;
     }
 
-    ++currentIndex;
-    return indexList;
+    // check to see if the list is the same as the first one.
+    // we can't do a counter on this because factorials grow too large
+    // too fast.
+    BOOL isFirst = YES;
+    for (i = 0; i < size; ++i) {
+        if (indexList[i] != i) {
+            isFirst = NO;
+        }
+    }
+
+    if (isFirst) {
+        noMoreResults = YES;
+        return NULL;
+    } else {
+        return indexList;
+    }
 }
 
 - free {

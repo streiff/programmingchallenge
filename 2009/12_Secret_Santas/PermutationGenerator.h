@@ -1,13 +1,12 @@
 #import "List.h"
 
 @interface PermutationGenerator : Object {
-    int* indexList;  
+    BOOL noMoreResults;
     int size;
-    int currentIndex;
+    int* indexList;  
 }
 
 - (PermutationGenerator*) initWithSize: (int) size;
-- (int) permutationCount;
 - (const int*) nextPermutation;
 - free;
 

@@ -23,6 +23,14 @@
     return str;
 }
 
+- (String*) lastName {
+    return lastName;
+}
+
+- (BOOL) isSameFamily: (Person*) p {
+    return [lastName equals: [p lastName]];
+}
+
 - free {
     [firstName free];
     [lastName free];

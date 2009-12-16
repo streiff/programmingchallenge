@@ -10,6 +10,7 @@
 - (Object*) at: (int) pos;
 - (void) push: (Object*) data;
 - (int) length;
+
 - (void) each: (void(*) (Object*)) func;
 - free;
 

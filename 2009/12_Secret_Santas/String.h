@@ -13,7 +13,9 @@
 - (void) chomp;
 - (void) append: (String*) str;
 - (List*) split: (char) delim;
+- (BOOL) equals: (String*) s;
 - free;
+
 + (String*) concatenate: (int) count, ...;
 
 @end

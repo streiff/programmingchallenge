@@ -32,27 +32,22 @@
 
 - (List*) split: (char) delim {
     List* list = [[List alloc] init];    
-    int i, j, pos;
+    int i, pos;
     char* buff;
 
-    pos = 0;
-    for (i = 0, j = [self length]; i < j; ++i) {
-        if (cStr[i] == delim) {
-            buff = objc_malloc(sizeof(char) * (i - pos + 1));
-            buff = strncpy(buff, cStr + pos, i - pos);
-            buff[i - pos] = '\0';
+    pos = len - 1;
+    for (i = pos; i >= 0; --i) {
+        if (cStr[i] == delim || i == 0) {
+            int size = pos - (cStr[i] == delim ? i : i - 1);
+            int startLoc = i + (cStr[i] == delim ? 1 : 0);
+            
+            buff = objc_malloc(sizeof(char) * (size + 1));
+            buff = strncpy(buff, cStr + startLoc, size);
+            buff[size] = '\0';
             [list push: [[String alloc] initWithCString: buff]];
             objc_free(buff);
-            pos = i + 1;
+            pos = i - 1;
         }
-    }
-
-    if (pos <= [self length]) {
-        buff = objc_malloc(sizeof(char) * (i - pos + 1));
-        buff = strncpy(buff, cStr + pos, i - pos);
-        buff[i - pos] = '\0';
-        [list push: [[String alloc] initWithCString: buff]];
-        objc_free(buff);
     }
 
     return list;
@@ -60,13 +55,9 @@
 
 - (void) append: (String*) str {
     int newLen = strlen(cStr) + strlen([str cStr]);
-    char* newCStr = objc_malloc(sizeof(char) * (newLen + 1));
-    strncpy(newCStr, cStr, len);
-    strncpy(newCStr + len, [str cStr], [str length]);
-    newCStr[newLen] = '\0';
-
-    objc_free(cStr);
-    cStr = newCStr;
+    cStr = objc_realloc(cStr, sizeof(char) * (newLen + 1));
+    strncpy(cStr + len, [str cStr], [str length]);
+    cStr[newLen] = '\0';
     len = newLen;
 }
 
@@ -74,8 +65,14 @@
     return [[String alloc] initWithCString: [self cStr]];
 }
 
+- (BOOL) equals: (String*) s {
+    return !strcmp(cStr, [s cStr]);
+}
+
 - free {
-    objc_free((char*) cStr);
+    if (cStr) {
+        objc_free((char*) cStr);
+    }
     return [super free];
 }
 
