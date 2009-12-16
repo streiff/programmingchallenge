@@ -17,7 +17,8 @@ int main(const int argc, const char *argv[]) {
         return 1;
     }
 
-    List *list = [[List alloc] init];
+    List *srcList = [[List alloc] init];
+    List *destList = [[List alloc] init];
     String *str = [[String alloc] initWithCString: argv[1]];
     FileReader* read = [[FileReader alloc] initWithFilename: str];
 
@@ -31,40 +32,52 @@ int main(const int argc, const char *argv[]) {
         Person *person = [[Person alloc] initWithFirstName: [(String*) [data at: 0] deepCopy]
                                          lastName:  [(String*) [data at: 1] deepCopy]
                                          email:  [(String*) [data at: 2] deepCopy]];
-        [list push: person];
+
+        [srcList push:  [person deepCopy]];
+        [destList push: [person deepCopy]];
+        [person free];
     }
 
-    PermutationGenerator* p = [[PermutationGenerator alloc] initWithSize: [list length]];
-    const int* perm;
-    BOOL foundSolution = NO;
-int j = 0;
-    while (!foundSolution && (perm = [p nextPermutation]) != NULL) {
-    ++j;
-        int i;
-        for (i = 0; i < [list length]; ++i) {
-            Person* p1 = (Person*) [list at: i];
-            Person* p2 = (Person*) [list at: perm[i]];
+    [destList shuffle];
 
-            if ([p1 isSameFamily: p2]) {
-                break;
-            }
-        }
-        foundSolution = i == [list length];
-    }
+    [srcList each: &printLine1];
+    printf("\n==SORT==\n\n");
+    [destList shuffle];
+    [destList each: &printLine1];
 
-    if (foundSolution) {
-        int i;
-        for (i = 0; i < [list length]; ++i) {
-            Person* p1 = (Person*) [list at: i];
-            Person* p2 = (Person*) [list at: perm[i]];
-            printf("%s gives to %s\n", [[p1 toString] cStr], [[p2 toString] cStr]);
-        }
-    } else {
-        printf("A list could not be generated.\n");
-    }
-    [list free];
+    // PermutationGenerator* p = [[PermutationGenerator alloc] initWithSize: [list length]];
+    // const int* perm;
+    // BOOL foundSolution = NO;
+    // int j = 0;
+    // while (!foundSolution && (perm = [p nextPermutation]) != NULL) {
+    // ++j;
+    //     int i;
+    //     for (i = 0; i < [list length]; ++i) {
+    //         Person* p1 = (Person*) [list at: i];
+    //         Person* p2 = (Person*) [list at: perm[i]];
+
+    //         if ([p1 isSameFamily: p2]) {
+    //             break;
+    //         }
+    //     }
+    //     foundSolution = i == [list length];
+    // }
+
+    // if (foundSolution) {
+    //     int i;
+    //     for (i = 0; i < [list length]; ++i) {
+    //         Person* p1 = (Person*) [list at: i];
+    //         Person* p2 = (Person*) [list at: perm[i]];
+    //         printf("%s gives to %s\n", [[p1 toString] cStr], [[p2 toString] cStr]);
+    //     }
+    // } else {
+    //     printf("A list could not be generated.\n");
+    // }
+    [srcList free];
+    [destList free];
 
 
-    return foundSolution ? 0 : 1;
+    // return foundSolution ? 0 : 1;
+    return 0;
 }
 

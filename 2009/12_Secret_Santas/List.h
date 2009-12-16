@@ -9,6 +9,8 @@
 - (id) init;
 - (Object*) at: (int) pos;
 - (void) push: (Object*) data;
+- (void) remove: (Object*) data;
+- (void) shuffle;
 - (int) length;
 
 - (void) each: (void(*) (Object*)) func;

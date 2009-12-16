@@ -12,6 +12,12 @@
     return self;
 }
 
+- deepCopy {
+    return [[Person alloc] initWithFirstName: [firstName deepCopy]
+                           lastName: [lastName deepCopy]
+                           email: [email deepCopy]];
+}
+
 - (String*) toString {
     String* whitespace = [[String alloc] initWithCString: " "];
     String* str = [String concatenate: 5, firstName, 
