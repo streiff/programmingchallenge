@@ -15,6 +15,7 @@
 - (int) length;
 
 - (void) each: (void(*) (Object*)) func;
+- (void) sort: (int (Object*, Object*)) func;
 - free;
 
 @end

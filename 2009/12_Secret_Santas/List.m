@@ -109,11 +109,62 @@
 }
 
 - (void) each: (void(*) (Object*)) func {
-    struct objc_list* cell = head;
+    struct objc_list *cell = head;
     while (cell) {
         (*func)(cell->head);
         cell = cell->tail;
     }
+}
+
+- (void) sort: (int (Object*, Object*)) func {
+    if (head == NULL) {
+        return;
+    }
+
+    struct objc_list *newHead = (struct objc_list*) objc_malloc(sizeof(struct objc_list));
+    struct objc_list *p = NULL;
+    struct objc_list *q = NULL;
+    struct objc_list *r = NULL;
+    struct objc_list *s = NULL;
+
+    // setup the new head.
+    newHead->head = head->head;
+    newHead->tail = NULL;
+
+    // iterate through the rest of head
+    p = head->tail;
+    while(p) {
+        q = (struct objc_list*) objc_malloc(sizeof(struct objc_list));
+        q->head = p->head;
+        q->tail = NULL;
+
+        if ((*func)(newHead->head, p->head) > 0) {
+            // insert a new head if p->head < newHead;
+            q->tail = newHead;
+            newHead = q;
+        } else {
+            // otherwise, find the right place and insert it
+            r = newHead;
+            s = newHead->tail;
+            while(s) {
+                if ((*func)(s->head, p->head) > 0) {
+                    r->tail = q;
+                    q->tail = s;
+                    break;
+                }
+                r = s;
+                s = s->tail;
+            }
+
+            if (!s) {
+                r->tail = q;
+            }
+        }
+        p = p->tail;
+    }
+
+    list_free(head);
+    head = newHead;
 }
 
 - free {

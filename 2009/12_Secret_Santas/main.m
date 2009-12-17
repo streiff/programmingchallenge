@@ -9,8 +9,10 @@
 
 void readFileIntoLists(String*, List*, List*);
 void matchSantas(List*, List*);
+int lastNameSorter(Object *o1, Object *o2);
+BOOL isValidList(List*);
 
-int main(const int argc, const char *argv[]) {
+int main(const int argc, const char **argv) {
     if (argc != 2) {
         printf("Must have a filename\n");
         return 1;
@@ -22,8 +24,12 @@ int main(const int argc, const char *argv[]) {
     List *destList = [[List alloc] init];
 
     readFileIntoLists(filename, srcList, destList);
-    matchSantas(srcList, destList);
+    if (!isValidList(srcList)) {
+        printf("Cannot make a secret santa list with these names.\n");
+        return -1;
+    }
 
+    matchSantas(srcList, destList);
     for (int i = 0, j = [srcList length]; i < j; ++i) {
         printf("%s gives to %s\n", [[(Person*) [srcList at: i] toString] cStr],
                                    [[(Person*) [destList at: i] toString] cStr]);
@@ -59,7 +65,7 @@ void readFileIntoLists(String *filename, List *l1, List *l2) {
     [read free];
 }
 
-void matchSantas(List* srcList, List* destList) {
+void matchSantas(List *srcList, List *destList) {
     [destList shuffle];
 
     for (int i = 0, j = [srcList length]; i < j; ++i) {
@@ -71,4 +77,35 @@ void matchSantas(List* srcList, List* destList) {
             i = 0;
         }
     }
+}
+
+int lastNameSorter(Object *o1, Object *o2) {
+    Person *p1 = (Person*) o1;
+    Person *p2 = (Person*) o2;
+    return strcmp([[p1 lastName] cStr], [[p2 lastName] cStr]);
+}
+
+BOOL isValidList(List* l) {
+    [l sort: &lastNameSorter];
+    if ([l length] <= 1) {
+        return NO;
+    }
+
+    int largest = 0;
+    int current = 0;
+      
+    for (int i = 1, j = [l length]; i < j; ++i) {
+        Person *p1 = (Person*) [l at: i];
+        Person *p2 = (Person*) [l at: i - 1];
+
+        if ([p1 isSameFamily: p2]) {
+            ++current;
+        } else if (current > largest) {
+            largest = current;
+            current = 1;
+        } else {
+            current = 1;
+        }
+    }
+    return largest < ([l length] / 2);
 }
