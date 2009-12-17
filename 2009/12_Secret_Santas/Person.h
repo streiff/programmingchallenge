@@ -7,7 +7,7 @@
     String* email;
 }
 
-- (Person*) initWithFirstName: (String*) firstName
+- (id) initWithFirstName: (String*) firstName
             lastName: (String*) lastName
             email: (String*) email;
 

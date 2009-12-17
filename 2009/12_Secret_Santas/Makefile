@@ -1,4 +1,4 @@
-CFLAGS=-g -O -Wall
+CFLAGS=-g -O -Wall -std=gnu99
 
 all: clean
 	gcc $(CFLAGS) -c String.m

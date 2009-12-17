@@ -11,6 +11,7 @@
 - (void) push: (Object*) data;
 - (void) remove: (Object*) data;
 - (void) shuffle;
+- (void) swap: (int) n1 with: (int) n2;
 - (int) length;
 
 - (void) each: (void(*) (Object*)) func;

@@ -4,7 +4,7 @@
 #import "String.h"
 
 @implementation String
-- (String*) initWithCString: (const char*) chars {
+- (id) initWithCString: (const char*) chars {
     self = [super init];
     len = strlen(chars);
     cStr = objc_malloc(sizeof(char) * (len + 1));
@@ -31,12 +31,11 @@
 }
 
 - (List*) split: (char) delim {
-    List* list = [[List alloc] init];    
-    int i, pos;
-    char* buff;
+    List *list = [[List alloc] init];    
+    char *buff;
+    int pos = len - 1;
 
-    pos = len - 1;
-    for (i = pos; i >= 0; --i) {
+    for (int i = pos; i >= 0; --i) {
         if (cStr[i] == delim || i == 0) {
             int size = pos - (cStr[i] == delim ? i : i - 1);
             int startLoc = i + (cStr[i] == delim ? 1 : 0);
@@ -78,11 +77,10 @@
 
 + (String*) concatenate: (int) count, ... {
     va_list args;
-    int i;
     va_start(args, count);
 
     String* result = [[String alloc] initWithCString: ""];
-    for (i = 0; i < count; ++i) {
+    for (int i = 0; i < count; ++i) {
         [result append: va_arg(args, String*)];
     }
     return result;

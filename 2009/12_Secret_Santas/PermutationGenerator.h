@@ -3,7 +3,7 @@
 @interface PermutationGenerator : Object {
     BOOL noMoreResults;
     int size;
-    int* indexList;  
+    int *indexList;  
 }
 
 - (PermutationGenerator*) initWithSize: (int) size;

@@ -7,7 +7,7 @@
     char* cStr;
 }
 
-- (String*) initWithCString: (const char*) cStr;
+- (id) initWithCString: (const char*) cStr;
 - (char*) cStr;
 - (int) length;
 - (void) chomp;
