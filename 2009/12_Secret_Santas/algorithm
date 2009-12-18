@@ -1,0 +1,16 @@
+Pretty simple algorthm.
+
+Read every line of a file and insert it into 2 lists
+randomize the second list
+iterate through the lists
+    if any i exists such that list1[i] and list2[i] are the same family
+        swap list2[i] with another random item in list2
+        reset the iterator to the first item of the list and start again
+
+
+There are quite a few base classes i had to write here. Turns out that the
+base objective-c doesn't give you much (not even a nice object for a mutable
+string or a nice list!) so I had to make them myself. Not part of the base
+problem, but I was not going to wimp out and make it Mac-only.    
+
+Note: gobjc is required.
