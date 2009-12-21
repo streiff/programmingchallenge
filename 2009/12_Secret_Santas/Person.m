@@ -29,6 +29,14 @@
     return str;
 }
 
+- (String*) email {
+    return email;
+}
+
+- (String*) firstName {
+    return firstName;
+}
+
 - (String*) lastName {
     return lastName;
 }

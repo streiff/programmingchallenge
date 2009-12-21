@@ -31,8 +31,12 @@ int main(const int argc, const char **argv) {
 
     matchSantas(srcList, destList);
     for (int i = 0, j = [srcList length]; i < j; ++i) {
-        printf("%s gives to %s\n", [[(Person*) [srcList at: i] toString] cStr],
-                                   [[(Person*) [destList at: i] toString] cStr]);
+        Person *p1 = (Person*) [srcList at: i];
+        Person *p2 = (Person*) [destList at: i];
+        printf("%s => %s %s\n", [[p1 email] cStr],
+                                [[p2 firstName] cStr],
+                                [[p2 lastName] cStr]);
+                             
     }
 
     [destList free];

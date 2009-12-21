@@ -12,6 +12,8 @@
             email: (String*) email;
 
 - (String*) toString;
+- (String*) email;
+- (String*) firstName;
 - (String*) lastName;
 - (BOOL) isSameFamily: (Person*) p;
 - free;
