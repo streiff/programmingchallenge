@@ -71,14 +71,18 @@ void readFileIntoLists(String *filename, List *l1, List *l2) {
 
 void matchSantas(List *srcList, List *destList) {
     [destList shuffle];
+    int i = 0;
+    int j = [srcList length];
 
-    for (int i = 0, j = [srcList length]; i < j; ++i) {
+    while (i < j) {
         Person *p1 = (Person*) [srcList at: i];
         Person *p2 = (Person*) [destList at: i];
 
         if ([p1 isSameFamily: p2]) {
             [destList swap: i with: random() % j];
             i = 0;
+        } else {
+            ++i;
         }
     }
 }
