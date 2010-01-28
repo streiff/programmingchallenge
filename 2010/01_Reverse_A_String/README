@@ -1,0 +1,4 @@
+Write a program that reverses a string.
+
+Clojure program. Nice and simple
+java -jar clojure.jar reverse.clj
