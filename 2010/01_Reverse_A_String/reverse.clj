@@ -14,11 +14,7 @@
           (.drawImage image, 0, 70, nil)
           (.drawString "Chuck Norris has hit your string!" 25 25)
           (.drawString (apply str (reverse input-string)) 25 45)
-          (.drawString "It also fell so hard it dropped onto the console!" 25 65)
-        )
-      )
-    ))
-)
+          (.drawString "It also fell so hard it dropped onto the console!" 25 65))))))
 
 (let [frame (new JFrame "String Reverser | resreveR gnirtS")
       input-label (new JLabel "String: ")
@@ -45,5 +41,4 @@
     (.setSize 400 125)
     (.setVisible true))
 
-  (. text-box selectAll)
-)
+  (. text-box selectAll))
