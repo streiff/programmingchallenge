@@ -21,7 +21,7 @@
 
 (defn parse-input [user-input]
   (if (> (.length user-input) 0)
-    (map #(Integer/parseInt %) (seq (.split user-input ",")))
+    (map #(Integer/parseInt %) (set (.split user-input ",")))
     (list)))
 
 
