@@ -10,12 +10,8 @@ if [ -z $CLOJURE_CONTRIB_JAR ]; then
   exit
 fi
 
-if [ $# -ne 2 ]; then
-  echo "Usage: $0 [encode|decode] [filename]"
-elif [ $1 = "encode" ]; then
-  java -cp $CLOJURE_JAR:$CLOJURE_CONTRIB_JAR:. clojure.main encoder.clj $2
-elif [ $1 = "decode" ]; then
-  java -cp $CLOJURE_JAR:$CLOJURE_CONTRIB_JAR:. clojure.main decoder.clj $2
+if [ $# -eq 3 -a \( \( $1 = "encode" \) -o \( $1 = "decode" \) \) ]; then
+  java -cp $CLOJURE_JAR:$CLOJURE_CONTRIB_JAR:. clojure.main encoder.clj $1 $2 $3
 else
-  echo "Usage: $0 [encode|decode] [filename]"
+  echo "Usage: $0 [encode|decode] [in.filename] [out.filename]"
 fi
