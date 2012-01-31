@@ -1,0 +1,13 @@
+A program that creates a histogram from an input file.
+
+e.g. A file containing AAAABBBBAAAADDDDAAAA
+
+Produces the output:
+
+A:************
+B:****
+D:****
+
+
+To run the program:
+sh histo.sh input.txt
