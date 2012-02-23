@@ -1,6 +1,8 @@
 #!/bin/sh
 
-ruby -pe 'gsub(/(.)/, "\\1\n")' < $1 |
+ruby -pe 'gsub(/(.)/, "\\1\n")' - |
     sort | 
-    tr -d '\n' |
-    awk '{s=l=""; for(i=1;i<=length;i++){c=substr($1, i, 1); if(l!=c){s=s "\n" c ": "} s=s "*";l=substr($1,i,1)} print substr(s,2)}'
+    grep -v '^$' |
+    tr -d '\n' | 
+    sed 's#\(.\)\(\1*\)#\1\2\n#g' | 
+    awk '{ a = substr($0, 1, 1); gsub(/./, "*", $0); printf "%s:%s\n", a, $0 }' 
