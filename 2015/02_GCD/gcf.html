@@ -1,0 +1,207 @@
+<html>
+<head>
+<title>Greatest Common Factor</title>
+
+<script type="text/javascript">
+  // Sure - I could use jquery or prototype or any number of libraries.
+  // but that is lame for the contest and this is more fun.
+
+  function $(id) {
+    return document.getElementById(id);
+  }
+
+  function $ctx() {
+    return $('canvas').getContext('2d');
+  }
+
+  function $canvas() {
+    return $('canvas');
+  }
+
+  function randomColour() {
+    var r = parseInt(255 * Math.random());
+    var g = parseInt(255 * Math.random());
+    var b = parseInt(255 * Math.random());
+    return 'rgb(' + r + ',' + g + ',' + b + ')';
+  }
+
+  function log(message) {
+    $('message').innerHTML = message;
+  }
+
+  function Loop() {
+    this.state = "STOPPED";
+
+    this.states = [];
+    this.states["STOPPED"]     = function(_this) {return _this.onStopped();};
+    this.states["INIT"]        = function(_this) {return _this.onInit();};
+    this.states["DRAW_SCENE"]  = function(_this) {return _this.onDrawScene();};
+    this.states["SUBTRACTION"] = function(_this) {return _this.onSubtraction();};
+    this.states["REDEFINE"]    = function(_this) {return _this.onRedefine();};
+    this.states["ANSWERED"]    = function(_this) {return _this.onAnswer();};
+
+  }
+
+  Loop.prototype.run = function() {
+    this.gcf = new GCF(parseInt($('n1').value), parseInt($('n2').value));
+    this.state = "INIT";
+    this.tick();
+  }
+
+  Loop.prototype.tick = function() {
+    if (this.states[this.state](this)) {
+      setTimeout(function(_this) {_this.tick();}, parseInt($('delay').value), this);
+    }
+  }
+
+  Loop.prototype.onStopped = function() {
+    return false;
+  }
+
+  Loop.prototype.onInit = function() {
+    log("Initializing...");
+    this.gcf.initCanvas();
+    this.state = "DRAW_SCENE";
+    return true;
+  }
+
+  Loop.prototype.onDrawScene = function() {
+    log("Drawing geometry for GCF of " + this.gcf.originalN1 + " and " + this.gcf.originalN2);
+    this.gcf.drawScene();
+
+    this.state = "SUBTRACTION";
+    return true;
+  }
+
+  Loop.prototype.onSubtraction = function() {
+    log("Subracting largest square");
+    this.gcf.drawSubtractBox();
+
+    if (this.gcf.answer() != undefined) {
+      this.state = "ANSWERED";
+      return true;
+    } else if (this.gcf.isRedefinable()) {
+      this.state = "REDEFINE";
+      return true;
+   } else {
+      this.state = "SUBTRACTION";
+      return true;
+    }
+  }
+
+  Loop.prototype.onRedefine = function() {
+    log("Redefining the problem...");
+    this.gcf = new GCF(this.gcf.currentN1, this.gcf.currentN2);
+    this.state = "INIT";
+    return true;
+  }
+
+  Loop.prototype.onAnswer = function() {
+    log("GCF is " + this.gcf.currentN2);
+    return false;
+  }
+
+
+  function GCF(n1, n2) {
+    this.originalN1 = n1 > n2 ? n1 : n2;
+    this.originalN2 = n1 > n2 ? n2 : n1;
+    this.currentN1 = this.originalN1;
+    this.currentN2 = this.originalN2;
+    this.subtractionNumber = 0;
+    this.padding = 10;
+    this.scale  = ($canvas().width - (this.padding * 2)) / parseFloat(this.originalN1);
+  }
+
+  GCF.prototype.initCanvas = function() {
+    var canvas = $canvas();
+    var ctx = $ctx();
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }
+
+  GCF.prototype.drawScene = function() {
+    this.drawBox(this.originalN1, this.originalN2, this.padding, this.padding, true, undefined)
+  }
+
+  GCF.prototype.drawBox = function (n1, n2, offsetX, offsetY, drawLabels, insideText) {
+    var ctx = $ctx();
+
+    ctx.save();
+      ctx.fillStyle = randomColour();
+      ctx.fillRect(offsetX, offsetY, n1 * this.scale, n2 * this.scale);
+    ctx.restore();
+
+    if (drawLabels) {
+      ctx.save();
+        ctx.fillStyle = "black";
+        ctx.textAlign = 'center';
+        ctx.fillText(n1, (this.scale * n1 / 2) + offsetX, offsetY - 1);
+
+        ctx.rotate(Math.PI * 1.5);
+        ctx.fillText(n2, -(this.scale * n2 / 2 + offsetY), offsetX - 1);
+      ctx.restore();
+    }
+
+    if (insideText != undefined) {
+      ctx.save();
+        ctx.fillstyle = "black";
+        ctx.textAlign = 'center';
+        ctx.font = "12px arial";
+        ctx.translate((((2 * offsetX + (this.scale * n1)) / 2)), offsetY + ((this.scale * n2) / 2));
+        ctx.rotate(Math.PI/-4.0);
+        ctx.fillText(insideText, 0, 0);
+      ctx.restore();
+
+    }
+  }
+
+  GCF.prototype.drawSubtractBox = function() {
+    var ctx = $ctx();
+    var n1 = this.currentN1;
+    var n2 = this.currentN2;
+
+    if (n2 == 0) {
+      // short circut for special case.
+      this.currentN1 = 0;
+      this.currentN2 = this.originalN1;
+      return;
+    }
+
+    var offsetX = this.padding + (this.subtractionNumber++ * (this.scale * n2));
+    this.drawBox(n2, n2, offsetX, this.padding, false, "Deleting " + n2);
+    this.currentN1 = this.currentN1 - n2;
+  }
+
+  GCF.prototype.isRedefinable = function() {
+    return this.currentN2 > this.currentN1;
+  }
+
+  GCF.prototype.answer = function() {
+    return this.currentN1 == 0 ? this.currentN2 : undefined;
+  }
+
+</script>
+
+</head>
+<!-- TODO: // Add a jira to get arjay to make this look less ass. It needs some love.  -->
+<!-- and congrats for looking at the source. You should reward yourself with a cookie. -->
+<body>
+<div>
+  <div>Euclidean Algorithm Visualization</div>
+    <form>
+      <table border="0">
+        <tr><td>N1:</td><td><input id="n1" type="text" value="10" /></td></tr>
+        <tr><td>N2:</td><td><input id="n2" type="text" value="25" /></td></tr>
+        <tr><td>Step Delay(ms):</td><td><input id="delay" type="text" value="500" /></td></tr>
+        <tr><td colspan=2 align="center"><input type="button" value="Start" onClick="new Loop().run()"/></td></tr>
+      </table>
+    </form>
+  </div>
+</div>
+
+<hr size="1" />
+<div id="message">Waiting for user input</div>
+<hr size="1" />
+<canvas id="canvas" width="600px" height="600px" style="border: 1px solid black" />
+
+</html>
+

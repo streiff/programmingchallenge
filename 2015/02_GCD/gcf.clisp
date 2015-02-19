@@ -1,0 +1,9 @@
+#!/usr/bin/env clisp
+; Call it: ./gcf.clisp 25 10
+
+(defun gcf (a b)
+  (if (= b 0) a
+      (gcf b (mod a b))))
+
+(format t "~@a"  (apply 'gcf (sort (list (parse-integer (car *args*)) 
+                                         (parse-integer (cadr *args*))) '>)))
