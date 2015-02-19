@@ -1,0 +1,9 @@
+#!/usr/bin/env clisp
+; Call it: ./rot_x.clisp Zebra 1
+(set-macro-character #\< (lambda (s i) `(char-code ,(car (read-delimited-list #\> s)))))
+(set-macro-character #\^ (lambda (s i) `(code-char ,(car (read-delimited-list #\v s)))))
+
+(defun rc (c i a) ^ (+ < a > (mod (+ i (- < c > < a >)) 26)) v )
+(defun rx (s i) (map 'string (lambda (c) (rc c i (if (upper-case-p c) #\A #\a))) s))
+
+(princ (rx (car *args*) (parse-integer (cadr *args*))))
