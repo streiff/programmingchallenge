@@ -9,6 +9,8 @@
 int parsenumberrooms(char* roomdata);
 struct room* parseroom();
 void parseexits(struct room* roomdata);
+void parseitems(struct room* roomdata);
+void parsemobs(struct room* roomdata);
 
 struct world* createworld(char* filename) {
     char* buffer = 0;
@@ -64,6 +66,8 @@ struct room* parseroom() {
     }
 
     parseexits(r);
+    parseitems(r);
+    parsemobs(r);
 
     return r;
 }
@@ -99,6 +103,43 @@ void parseexits(struct room* r) {
     }
 }
 
+void parseitems(struct room* r) {
+    r->numitems = atoi(strtok(NULL, NEWLINE));
+    r->items = (struct item**) malloc(sizeof(struct item*) * r->numitems);
+
+    int i;
+    for (i = 0; i < r->numitems; ++i) {
+         r->items[i] = (struct item*) malloc(sizeof(struct item));
+
+         char* line = strtok(NULL, NEWLINE);
+         r->items[i]->keyword = (char*) malloc(sizeof(char) * strlen(line) + 1);
+         strcpy(r->items[i]->keyword, line);
+
+         line = strtok(NULL, NEWLINE);
+         r->items[i]->text = (char*) malloc(sizeof(char) * strlen(line) + 1);
+         strcpy(r->items[i]->text, line);
+    }
+}
+
+void parsemobs(struct room* r) {
+    r->nummobs = atoi(strtok(NULL, NEWLINE));
+    r->mobs = (struct mob**) malloc(sizeof(struct mob*) * r->nummobs);
+
+    int i;
+    for (i = 0; i < r->nummobs; ++i) {
+         r->mobs[i] = (struct mob*) malloc(sizeof(struct mob));
+
+         char* line = strtok(NULL, NEWLINE);
+         r->mobs[i]->keyword = (char*) malloc(sizeof(char) * strlen(line) + 1);
+         strcpy(r->mobs[i]->keyword, line);
+
+         line = strtok(NULL, NEWLINE);
+         r->mobs[i]->text = (char*) malloc(sizeof(char) * strlen(line) + 1);
+         strcpy(r->mobs[i]->text, line);
+    }
+}
+
+
 void destroyworld(struct world* w) {
     int i, j;
 
@@ -110,8 +151,24 @@ void destroyworld(struct world* w) {
 
         for (j = 0; j < w->rooms[i]->numexits; ++j) {
             if (w->rooms[i]->exits[j]->text != NULL) free(w->rooms[i]->exits[j]->text);
-            free(w->rooms[i]);
+            free(w->rooms[i]->exits[j]);
         }
+        free(w->rooms[i]->exits);
+
+        for (j = 0; j < w->rooms[i]->numitems; ++j) {
+            if (w->rooms[i]->items[j]->keyword != NULL) free(w->rooms[i]->items[j]->keyword);
+            if (w->rooms[i]->items[j]->text != NULL) free(w->rooms[i]->items[j]->text);
+            free(w->rooms[i]->items[j]);
+        }
+        free(w->rooms[i]->items);
+
+        for (j = 0; j < w->rooms[i]->nummobs; ++j) {
+            if (w->rooms[i]->mobs[j]->keyword != NULL) free(w->rooms[i]->mobs[j]->keyword);
+            if (w->rooms[i]->mobs[j]->text != NULL) free(w->rooms[i]->mobs[j]->text);
+            free(w->rooms[i]->mobs[j]);
+        }
+        free(w->rooms[i]->mobs);
+
         free(w->rooms);
     }
 

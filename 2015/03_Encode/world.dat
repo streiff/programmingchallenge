@@ -30,6 +30,18 @@ The haze of the area makes it impossible to see clearly in that direction.
 west
 2
 The haze of the area makes it impossible to see clearly in that direction.
+3
+forest
+His old robes are frayed an ill-kept. The ageless monk looks tired.
+monk
+His old robes are frayed an ill-kept. The ageless monk looks tired.
+plaque
+The plaque reads: All who leave this temple shall be marked for death.
+2
+forest
+Forest says "You are ready learn your first spells. Type 'cast encode' or 'cast decode' with what you wish and it shall be done. Then venture forth and become The Last Starfighter, er, The Last Adventurer I know you can be.
+monk
+Forest says "You are ready learn your first spells. Type 'cast encode' or 'cast decode' with what you wish and it shall be done. Then venture forth and become The Last Starfighter, er, The Last Adventurer I know you can be.
 1
 DEATH
 9
@@ -42,6 +54,8 @@ animal footprints in the dust ahead of you.
 Oh wait - why did it get dark all of a sudden?
 	
 Ouch! You have been eaten by a grue.
+0
+0
 0
 2
 DEATH
@@ -56,4 +70,6 @@ search of treasures only to be killed by local brigands. The most
 fearful of these brigands is a troop lead by the infamous rogue known
 only as NPE. You would like to find out what it stands for but she is
 currently standing behind you thrusting a spear into your back.
+0
+0
 0

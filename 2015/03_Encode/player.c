@@ -1,5 +1,6 @@
 #include "player.h"
 #include "data.h"
+#include "encode.h"
 
 #include <string.h>
 #include <stdlib.h>
@@ -88,7 +89,14 @@ void player_parse_look(struct player* p, int consocket, struct world* w) {
                 return;
             }
         }
-        char* t = "There is nothing in that direction.";
+        for (i = 0; i < r->numitems; ++i) {
+            struct item* e = r->items[i];
+            if (strcmp(e->keyword, tok) == 0) {
+                send(consocket, e->text, strlen(e->text), 0);
+                return;
+            }
+        }
+        char* t = "I don't see what you are trying to look at.";
         send(consocket, t, strlen(t), 0);
     }
 }
@@ -131,18 +139,53 @@ void player_parse_cast(struct player* p, int consocket, struct world* w) {
 
     lower(tok);
     if (strcmp(tok, "encode") == 0) {
-        char* t = encode(strtok(NULL, ""));
-        send(consocket, t, strlen(t), 0);
-        free(t);
+        char* t = strtok(NULL, "");
+        if (t == NULL) {
+            char* t = "This spell requires you to say what you wish to encode";
+            send(consocket, t, strlen(t), 0);
+        } else {
+            t = encode(t);
+            send(consocket, t, strlen(t), 0);
+            free(t);
+        }
     } else if (strcmp(tok, "decode") == 0) {
-        char* t = decode(strtok(NULL, ""));
-        send(consocket, t, strlen(t), 0);
-        free(t);
+        char* t = strtok(NULL, "");
+        if (t == NULL) {
+            char* t = "This spell requires you to say what you wish to decode";
+            send(consocket, t, strlen(t), 0);
+        } else {
+            t = decode(t);
+            send(consocket, t, strlen(t), 0);
+            free(t);
+        }
     } else { 
         char* t = "Sorry - i don't know that spell\n";
         send(consocket, t, strlen(t), 0);
     }
 }
+
+void player_parse_talk(struct player* p, int consocket, struct world* w) {
+    char* tok = strtok(NULL, SPACE);
+
+    if (tok == NULL) {
+        char* t = "Who would you like to talk to?";
+        send(consocket, t, strlen(t), 0);
+    } else {
+        struct room* r = w->rooms[p->room];
+        int i;
+        for (i = 0; i < r->nummobs; ++i) {
+            struct mob* m = r->mobs[i];
+            if (strcmp(m->keyword, tok) == 0) {
+                send(consocket, m->text, strlen(m->text), 0);
+                return;
+            }
+        }
+
+        char* t = "The person you are trying to talk to is not here.";
+        send(consocket, t, strlen(t), 0);
+    }
+}
+
 
 int player_parse(struct player* p, int consocket, struct world* w, char* text) {
     char* tok = strtok(text, SPACE);
@@ -179,6 +222,9 @@ int player_parse(struct player* p, int consocket, struct world* w, char* text) {
         return 1;
     } else if (strcmp(tok, "cast") == 0) {
         player_parse_cast(p, consocket, w);
+        return 1;
+    } else if (strcmp(tok, "talk") == 0) {
+        player_parse_talk(p, consocket, w);
         return 1;
     } else if (strcmp(tok, "quit") == 0 || 
                strcmp(tok, "q") == 0 ||

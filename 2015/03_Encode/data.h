@@ -18,7 +18,12 @@ struct exit {
 struct item {
     char* keyword;
     char* text;
-}
+};
+
+struct mob {
+    char* keyword;
+    char* text;
+};
 
 struct room {
     int id;
@@ -30,6 +35,9 @@ struct room {
 
     int numitems;
     struct item** items;
+
+    int nummobs;
+    struct mob** mobs;
 };
 
 struct world {
