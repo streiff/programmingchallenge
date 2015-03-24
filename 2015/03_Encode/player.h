@@ -6,16 +6,20 @@
 #define PLAYER_ALIVE 1
 #define PLAYER_DEAD 2
 
+#define MAX_PLAYERS 1024
+
 struct player {
     int room;
     int status;
+    int fd;
+    char* name;
 };
 
-struct player* createplayer();
+struct player* createplayer(int df);
 void destroyplayer(struct player*);
 
-void player_look(struct player*, int consocket, struct world*);
-void player_prompt(struct player*, int consocket);
-int player_parse(struct player*, int consocket, struct world*, char* text);
+void player_look(struct player*, struct world*);
+void player_prompt(struct player*);
+int player_parse(struct player*, struct world*, char* text);
 
 #endif

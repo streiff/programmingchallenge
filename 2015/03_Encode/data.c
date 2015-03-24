@@ -64,6 +64,7 @@ struct room* parseroom() {
         r->text[offset] = '\n';
         offset++;
     }
+    r->text[offset] = 0;
 
     parseexits(r);
     parseitems(r);

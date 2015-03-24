@@ -14,44 +14,63 @@
 #define DECODE_DIRECTION(X) (X == DIR_UP ? "up" : (X == DIR_DOWN ? "down" : (X == DIR_NORTH ? "north" : (X == DIR_SOUTH ? "south" : (X == DIR_EAST ? "east" : (X == DIR_WEST ? "west" : "void"))))))
 #define SPACE " "
 
+extern struct player** players;
 void lower(char*);
 
-struct player* createplayer() {
+struct player* createplayer(int fd) {
     struct player* p = (struct player*) malloc(sizeof(struct player));
     p->room = 0;
     p->status = PLAYER_ALIVE;
+    p->fd = fd;
+    p->name = (char*) malloc(sizeof(char) * 128);
     return p;
 }
 
 void destroyplayer(struct player* p) {
+    free(p->name);
     free(p);
 }
 
-void player_look(struct player* p, int consocket, struct world* w) {
+void player_look_other_players(struct player* p) {
+    int i;
+
+    for (i = 0; i < MAX_PLAYERS; ++i) {
+        if (players[i] == p) { continue; }
+
+        if (players[i] != NULL && players[i]->room == p->room) {
+            send(p->fd, players[i]->name, strlen(players[i]->name), 0);
+            char* t = " is also here.\n";
+            send(p->fd, t, strlen(t), 0);
+        }
+    }
+}
+
+void player_look(struct player* p, struct world* w) {
     int i;
     struct room* r = w->rooms[p->room];
-    send(consocket, r->text, strlen(r->text), 0);
+    send(p->fd, r->text, strlen(r->text), 0);
 
     if (r->numexits > 0) {
         char* exits = "\nExits are: ";
-        send(consocket, exits, strlen(exits), 0);
+        send(p->fd, exits, strlen(exits), 0);
 
         for (i = 0; i < r->numexits; ++i) {
             struct exit* e = r->exits[i];
             char* exittext = DECODE_DIRECTION(e->direction);
-            send(consocket, exittext, strlen(exittext), 0);
+            send(p->fd, exittext, strlen(exittext), 0);
 
             if (i != r->numexits - 1) {
-                send(consocket, ", ", 2, 0);
+                send(p->fd, ", ", 2, 0);
             }
         }
-        send(consocket, "\n\n", 2, 0);
+        send(p->fd, "\n\n", 2, 0);
     }
+    player_look_other_players(p);
 }
 
-void player_prompt(struct player* p, int consocket) {
+void player_prompt(struct player* p) {
     char* prompt = "\n10hp 10mp 10st> ";
-    send(consocket, prompt, strlen(prompt), 0);
+    send(p->fd, prompt, strlen(prompt), 0);
 }
 
 int player_parse_direction(char* dir) {
@@ -73,11 +92,11 @@ int player_parse_direction(char* dir) {
      }
 }
 
-void player_parse_look(struct player* p, int consocket, struct world* w) {
+void player_parse_look(struct player* p, struct world* w) {
     char* tok = strtok(NULL, SPACE);
 
     if (tok == NULL) {
-        player_look(p, consocket, w);
+        player_look(p, w);
     } else {
         struct room* r = w->rooms[p->room];
         int dir = player_parse_direction(tok);
@@ -85,23 +104,23 @@ void player_parse_look(struct player* p, int consocket, struct world* w) {
         for (i = 0; i < r->numexits; ++i) {
             struct exit* e = r->exits[i];
             if (e->direction == dir) {
-                send(consocket, e->text, strlen(e->text), 0);
+                send(p->fd, e->text, strlen(e->text), 0);
                 return;
             }
         }
         for (i = 0; i < r->numitems; ++i) {
             struct item* e = r->items[i];
             if (strcmp(e->keyword, tok) == 0) {
-                send(consocket, e->text, strlen(e->text), 0);
+                send(p->fd, e->text, strlen(e->text), 0);
                 return;
             }
         }
         char* t = "I don't see what you are trying to look at.";
-        send(consocket, t, strlen(t), 0);
+        send(p->fd, t, strlen(t), 0);
     }
 }
 
-void player_parse_move(struct player* p, int consocket, struct world* w, int dir) {
+void player_parse_move(struct player* p, struct world* w, int dir) {
     char* tok = strtok(NULL, SPACE);
 
     if (tok == NULL) {
@@ -112,7 +131,7 @@ void player_parse_move(struct player* p, int consocket, struct world* w, int dir
             struct exit* e = r->exits[i];
             if (e->direction == dir) {
                 p->room = e->toroom;
-                player_look(p, consocket, w);
+                player_look(p, w);
 
                 if (!strcmp("DEATH", w->rooms[p->room]->type)) {
                     p->status = PLAYER_DEAD;
@@ -121,19 +140,19 @@ void player_parse_move(struct player* p, int consocket, struct world* w, int dir
             }
         }
         char* t = "You cannot go in that direction";
-        send(consocket, t, strlen(t), 0);
+        send(p->fd, t, strlen(t), 0);
     } else {
         char* t = "I get why you want to go there but you don't need to be so verbose about it.\nI'm staying right here until you can be more consise.\n";
-        send(consocket, t, strlen(t), 0);
+        send(p->fd, t, strlen(t), 0);
     }
 }
 
-void player_parse_cast(struct player* p, int consocket, struct world* w) {
+void player_parse_cast(struct player* p, struct world* w) {
     char* tok = strtok(NULL, SPACE);
 
     if (!tok) {
         char* t = "What do you want me to cast?\n";
-        send(consocket, t, strlen(t), 0);
+        send(p->fd, t, strlen(t), 0);
         return;
     }
 
@@ -142,89 +161,99 @@ void player_parse_cast(struct player* p, int consocket, struct world* w) {
         char* t = strtok(NULL, "");
         if (t == NULL) {
             char* t = "This spell requires you to say what you wish to encode";
-            send(consocket, t, strlen(t), 0);
+            send(p->fd, t, strlen(t), 0);
         } else {
             t = encode(t);
-            send(consocket, t, strlen(t), 0);
+            send(p->fd, t, strlen(t), 0);
             free(t);
         }
     } else if (strcmp(tok, "decode") == 0) {
         char* t = strtok(NULL, "");
         if (t == NULL) {
             char* t = "This spell requires you to say what you wish to decode";
-            send(consocket, t, strlen(t), 0);
+            send(p->fd, t, strlen(t), 0);
         } else {
             t = decode(t);
-            send(consocket, t, strlen(t), 0);
+            send(p->fd, t, strlen(t), 0);
             free(t);
         }
     } else { 
         char* t = "Sorry - i don't know that spell\n";
-        send(consocket, t, strlen(t), 0);
+        send(p->fd, t, strlen(t), 0);
     }
 }
 
-void player_parse_talk(struct player* p, int consocket, struct world* w) {
+void player_parse_kill(struct player* p, struct world* w) {
+    char* t = "The friendly monk notices that you do not have a licence to kill. You are smoten to the ground with fire.\n";
+    send(p->fd, t, strlen(t), 0);
+    p->status = PLAYER_DEAD;
+}
+
+void player_parse_talk(struct player* p, struct world* w) {
     char* tok = strtok(NULL, SPACE);
 
     if (tok == NULL) {
         char* t = "Who would you like to talk to?";
-        send(consocket, t, strlen(t), 0);
+        send(p->fd, t, strlen(t), 0);
     } else {
+        lower(tok);
         struct room* r = w->rooms[p->room];
         int i;
         for (i = 0; i < r->nummobs; ++i) {
             struct mob* m = r->mobs[i];
             if (strcmp(m->keyword, tok) == 0) {
-                send(consocket, m->text, strlen(m->text), 0);
+                send(p->fd, m->text, strlen(m->text), 0);
                 return;
             }
         }
 
         char* t = "The person you are trying to talk to is not here.";
-        send(consocket, t, strlen(t), 0);
+        send(p->fd, t, strlen(t), 0);
     }
 }
 
 
-int player_parse(struct player* p, int consocket, struct world* w, char* text) {
+int player_parse(struct player* p, struct world* w, char* text) {
     char* tok = strtok(text, SPACE);
     lower(tok);
     if (tok == NULL) {
         return 1;
     } else if (strcmp(tok, "l") == 0 || 
                strcmp(tok, "look") == 0) {
-        player_parse_look(p, consocket, w);
+        player_parse_look(p, w);
         return 1;
     } else if (strcmp(tok, "u") == 0 || 
                strcmp(tok, "up") == 0) {
-        player_parse_move(p, consocket, w, DIR_UP);
+        player_parse_move(p, w, DIR_UP);
         return 1;
     } else if (strcmp(tok, "d") == 0 || 
                strcmp(tok, "down") == 0) {
-        player_parse_move(p, consocket, w, DIR_DOWN);
+        player_parse_move(p, w, DIR_DOWN);
         return 1;
     } else if (strcmp(tok, "e") == 0 || 
                strcmp(tok, "east") == 0) {
-        player_parse_move(p, consocket, w, DIR_EAST);
+        player_parse_move(p, w, DIR_EAST);
         return 1;
     } else if (strcmp(tok, "w") == 0 || 
                strcmp(tok, "west") == 0) {
-        player_parse_move(p, consocket, w, DIR_WEST);
+        player_parse_move(p, w, DIR_WEST);
         return 1;
     } else if (strcmp(tok, "n") == 0 || 
                strcmp(tok, "north") == 0) {
-        player_parse_move(p, consocket, w, DIR_NORTH);
+        player_parse_move(p, w, DIR_NORTH);
         return 1;
     } else if (strcmp(tok, "s") == 0 || 
                strcmp(tok, "south") == 0) {
-        player_parse_move(p, consocket, w, DIR_SOUTH);
+        player_parse_move(p, w, DIR_SOUTH);
         return 1;
     } else if (strcmp(tok, "cast") == 0) {
-        player_parse_cast(p, consocket, w);
+        player_parse_cast(p, w);
         return 1;
     } else if (strcmp(tok, "talk") == 0) {
-        player_parse_talk(p, consocket, w);
+        player_parse_talk(p, w);
+        return 1;
+    } else if (strcmp(tok, "kill") == 0) {
+        player_parse_kill(p, w);
         return 1;
     } else if (strcmp(tok, "quit") == 0 || 
                strcmp(tok, "q") == 0 ||
@@ -232,7 +261,7 @@ int player_parse(struct player* p, int consocket, struct world* w, char* text) {
         return 0;
     } else {
         char* t = "Huh?\n";
-        send(consocket, t, strlen(t), 0);
+        send(p->fd, t, strlen(t), 0);
     }
 
     return 1;

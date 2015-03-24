@@ -24,4 +24,6 @@ int acceptconn(struct connection* conn);
 
 void destroyconn(struct connection* conn);
 
+char* readconn(int ds);
+
 #endif

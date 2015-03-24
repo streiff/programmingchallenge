@@ -48,3 +48,16 @@ void destroyconn(struct connection* conn) {
     if (conn->serv != NULL) free(conn->serv);
     free(conn);
 }
+
+char* readconn(int ds) {
+    char* buff = (char*) malloc(sizeof(char) * 1024);
+    int read = recv(ds, buff, 1023, 0);
+    if (read == 0) {
+        free(buff);
+        return NULL;
+    } else if (read > 2) {
+        buff[read-2] = 0;
+    }
+
+    return buff;
+}
