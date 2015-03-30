@@ -183,6 +183,49 @@ void player_parse_cast(struct player* p, struct world* w) {
     }
 }
 
+void player_parse_say(struct player* p, struct world* w) {
+    char* tok = strtok(NULL, "");
+    int i;
+
+    if (!tok) {
+        char* t = "What do you want me to say?\n";
+        send(p->fd, t, strlen(t), 0);
+        return;
+    }
+
+    for (i = 0; i < MAX_PLAYERS; ++i) {
+        if (players[i] == p) { continue; }
+
+        if (players[i] != NULL && players[i]->room == p->room) {
+            char* t = "\n";
+            send(players[i]->fd, t, strlen(t), 0);
+            send(players[i]->fd, players[i]->name, strlen(players[i]->name), 0);
+            t = " says ";
+            send(players[i]->fd, t, strlen(t), 0);
+        }
+    }
+
+    do {
+    	for (i = 0; i < MAX_PLAYERS; ++i) {
+    	    if (players[i] == p) { continue; }
+
+    	    if (players[i] != NULL && players[i]->room == p->room) {
+    	        send(players[i]->fd, tok, strlen(tok), 0);
+    	    }
+    	}
+    } while ((tok = strtok(NULL, "")) != 0);
+
+    for (i = 0; i < MAX_PLAYERS; ++i) {
+        if (players[i] == p) { continue; }
+
+        if (players[i] != NULL && players[i]->room == p->room) {
+            char* t = "\n";
+            send(players[i]->fd, t, strlen(t), 0);
+            player_prompt(players[i]);
+        }
+    }
+}
+
 void player_parse_kill(struct player* p, struct world* w) {
     char* t = "The friendly monk notices that you do not have a licence to kill. You are smoten to the ground with fire.\n";
     send(p->fd, t, strlen(t), 0);
@@ -254,6 +297,9 @@ int player_parse(struct player* p, struct world* w, char* text) {
         return 1;
     } else if (strcmp(tok, "kill") == 0) {
         player_parse_kill(p, w);
+        return 1;
+    } else if (strcmp(tok, "say") == 0) {
+        player_parse_say(p, w);
         return 1;
     } else if (strcmp(tok, "quit") == 0 || 
                strcmp(tok, "q") == 0 ||
