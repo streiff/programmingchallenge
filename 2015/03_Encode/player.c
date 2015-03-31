@@ -194,12 +194,13 @@ void player_parse_say(struct player* p, struct world* w) {
     }
 
     for (i = 0; i < MAX_PLAYERS; ++i) {
-        if (players[i] == p) { continue; }
-
-        if (players[i] != NULL && players[i]->room == p->room) {
+        if (players[i] == p) {
+            char* t = "\nYou say: ";
+            send(players[i]->fd, t, strlen(t), 0);
+        } else if (players[i] != NULL && players[i]->room == p->room) {
             char* t = "\n";
             send(players[i]->fd, t, strlen(t), 0);
-            send(players[i]->fd, players[i]->name, strlen(players[i]->name), 0);
+            send(players[i]->fd, p->name, strlen(p->name), 0);
             t = " says ";
             send(players[i]->fd, t, strlen(t), 0);
         }
@@ -207,8 +208,6 @@ void player_parse_say(struct player* p, struct world* w) {
 
     do {
     	for (i = 0; i < MAX_PLAYERS; ++i) {
-    	    if (players[i] == p) { continue; }
-
     	    if (players[i] != NULL && players[i]->room == p->room) {
     	        send(players[i]->fd, tok, strlen(tok), 0);
     	    }
