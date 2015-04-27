@@ -32,7 +32,7 @@ class Bitmap
       y1, y2 = y2, y1
     end
 
-    deltax = x2 - x1;
+    deltax = x2 - x1
     deltay = (y2 - y1).abs
     error = deltax / 2
     ystep = y1 < y2 ? 1 : -1
@@ -40,7 +40,7 @@ class Bitmap
     y = y1
     x1.upto(x2) do |x|
       pixel = steep ? [y, x] : [x, y]
-      @map[y][x] = c;
+      @map[y][x] = c
       error -= deltay
       if (error < 0)
         y += ystep
@@ -91,5 +91,5 @@ bitmap.draw_line(Coord[0, 0], Coord[magic_number - 1, 0], '#')
 bitmap.draw_line(Coord[magic_number - 1, 0], Coord[0, magic_number - 1], '#')
 bitmap.fill(Coord[1,1], '#') if (magic_number > 3) # There is no fill under this size
 
-puts bitmap;
+puts bitmap
 puts "Total for size #{magic_number}: #{bitmap.count('#')}"
