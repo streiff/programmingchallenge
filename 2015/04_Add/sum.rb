@@ -84,7 +84,8 @@ class Bitmap
   end
 end
 
-magic_number = ARGV[0].to_i
+raise "Usage: #{$0} number" unless ARGV.length == 1
+magic_number = ARGV[0].to_i 
 bitmap = Bitmap.new(magic_number)
 bitmap.draw_line(Coord[0, 0], Coord[0, magic_number - 1], '#')
 bitmap.draw_line(Coord[0, 0], Coord[magic_number - 1, 0], '#')
