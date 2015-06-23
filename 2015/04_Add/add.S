@@ -6,7 +6,7 @@ errMessage2:
 	.asciz "This is written in assember. You expect me to handle negatives???\n"
 
 answerStart:
-	.asciz "add(%d) -> "
+	.asciz "add(%ld) -> "
 
 answerEnd:
 	.asciz "%ld\n"
@@ -25,8 +25,7 @@ main:
 	jne printErrMsg
 
 	# Call atoi on the first argument.
-	mov %rsi, %r12
-	mov 8(%r12), %rdi
+	mov 8(%rsi), %rdi
 	call atoi
 	mov %rax, %r13
 
@@ -64,4 +63,6 @@ end:
 	pop %r14
 	pop %r13
 	pop %r12
-	ret
+	mov $60, %rax
+	mov $0, %rdi
+	syscall
