@@ -9,7 +9,7 @@ answerStart:
 	.asciz "add(%d) -> "
 
 answerEnd:
-	.asciz "%d\n"
+	.asciz "%ld\n"
 
 .text
 	.global main
@@ -28,25 +28,25 @@ main:
 	mov %rsi, %r12
 	mov 8(%r12), %rdi
 	call atoi
-	mov %eax, %r13d
+	mov %rax, %r13
 
-	cmp $0, %r13d
+	cmp $0, %r13
 	jl printErrMsg2
  
 printAnswerStart:
  	mov $answerStart, %rdi
-	movslq %eax, %rsi
+	mov %rax, %rsi
 	call printf
 
 computeAnswer:
-	mov %r13d, %eax
-	imul %r13d, %eax
-	add %r13d, %eax
-	shr %eax
+	mov %r13, %rax
+	imul %r13, %rax
+	add %r13, %rax
+	shr %rax
 
 printAnswerEnd:
  	mov $answerEnd, %rdi
-	movslq %eax, %rsi
+	mov %rax, %rsi
 	call printf
 	jmp end
 
