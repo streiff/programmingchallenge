@@ -1,13 +1,15 @@
 (import '(java.io BufferedReader))
+(import '(java.util Collections))
 
-(def dict-word-list (clojure.string/split (slurp "/usr/share/dict/words") #"\n"))
+(def word-cmp #(compare (.toLowerCase %1) (.toLowerCase %2)))
+
+(def dict-word-list (sort word-cmp (clojure.string/split (slurp "/usr/share/dict/words") #"\n")))
 
 (def simple-sub-map (array-map 
     #"(?i)10100111001"      '("leet")
     #"(?i)n00b"             '("newbie")
     #"(?i)pwnd"             '("pwned")
     #"(?i)pwnt"             '("pwned")
-    #"(?i)dafuq"            '("what the f**k")
     #"(?i)j00"              '("you")
     #"(?i)joo"              '("you")
     #"(?i)vv"               '("w")
@@ -52,6 +54,7 @@
     #"(?i)c"                '("see" "c" "sea")
     #"(?i)b"                '("be" "B" "bee")
     #"(?i)&"                '("and" "anned" "ant")
+    #"(?i)dafuq"            '("what the fuck")
 ))
 
 
@@ -88,18 +91,25 @@
             words))
         word-lists))
 
+(defn lookup-word [word]
+    (def filtered-word-idx (Collections/binarySearch dict-word-list word word-cmp))
+    (if (< filtered-word-idx 0) nil (nth dict-word-list filtered-word-idx)))
+
+(defn filter-words [words]
+    (filter lookup-word words))
+
+(defn last-or-default [l default]
+    (list (if (empty? l) default (last l))))
+
 (defn filter-choices [word-lists]
-    (map (fn [words]
-        (let [first-word (first words)
-              filtered-words (filter some? (map (fn [word] (some (fn [dict-word] (if (.equalsIgnoreCase word dict-word) dict-word)) dict-word-list)) words))]
-            (list (if (> (count filtered-words) 0) (first filtered-words) first-word)))) word-lists))
+    (map #(last-or-default (filter-words %) (last %)) word-lists))
 
 (defn sentencfy [word-lists]
-    (clojure.string/split
-        (clojure.string/replace 
-            (clojure.string/join " " (flatten word-lists))
-            #"\s*\." ".")
-        #"\. "))
+    (-> (flatten word-lists)
+        (->> (clojure.string/join " "))
+        (clojure.string/split #"\s*\.\s*")
+    )
+)
 
 (defn wordify [word-lists]
     (apply str (interpose ". " 
