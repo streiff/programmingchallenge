@@ -3,10 +3,11 @@
 
 (def word-cmp #(compare (.toLowerCase %1) (.toLowerCase %2)))
 
-(def dict-word-list (sort word-cmp (clojure.string/split (slurp "/usr/share/dict/words") #"\n")))
+(def dict-word-list (sort word-cmp (clojure.string/split (slurp "W") #"\n")))
 
 (def simple-sub-map (array-map 
     #"(?i)10100111001"      '("leet")
+    #"(?i)(^|[^0])b"        '("$1bee" "$1be")
     #"(?i)n00b"             '("newbie")
     #"(?i)pwnd"             '("pwned")
     #"(?i)pwnt"             '("pwned")
@@ -26,6 +27,9 @@
     #"(?i)(^|\W)ur(\W|$)"   '("$1you're$2")
     #"(?i)(^|\W)u(\W|$)"    '("$1you$2")
     #"(?i)(\w)8|8(\w)"      '("$1ate$2")
+    #"(?i)c"                '("see" "c" "sea")
+    #"(?i)&"                '("and" "anned" "ant")
+    #"(?i)7"                '("t" "and" "anned" "ant")
     #"(?i)\$"               '("s")
     #"(?i)\("               '("c")
     #"(?i)z"                '("s")
@@ -33,7 +37,6 @@
     #"(?i)@"                '("a")
     #"(?i)4"                '("a")
     #"(?i)3"                '("e")
-    #"(?i)7"                '("t" "and" "anned" "ant")
     #"(?i)\+"               '("t")
     #"(?i)\#"               '("h")
     #"(?i)0"                '("o")
@@ -51,9 +54,6 @@
     #"(?i)><"               '("x")
     #"(?i)x"                '("ks" "cks")
     #"(?i)1|!"              '("i" "l")
-    #"(?i)c"                '("see" "c" "sea")
-    #"(?i)b"                '("be" "B" "bee")
-    #"(?i)&"                '("and" "anned" "ant")
     #"(?i)dafuq"            '("what the fuck")
 ))
 
@@ -64,9 +64,6 @@
 (defn split-words [lines]
     (map #(clojure.string/split % #"\s+" ) lines))
 
-(defn prepare-list [words]
-    (map list words))
-
 (defn word-regex-replace [word regex replacement]
     (clojure.string/replace word regex replacement))
 
@@ -74,14 +71,18 @@
     (map #(word-regex-replace word regex %) replacements))
 
 (defn word-simple-sub [word]
-    (distinct (flatten (map #(word-regex-replace-multiple word % (get simple-sub-map %)) (keys simple-sub-map)))))
+    (cons word (reduce (fn [word-list key]
+        (def replacement-list (get simple-sub-map key))
+        (distinct (flatten (map #(word-regex-replace-multiple % key replacement-list) word-list)))
+        ) (list word) (keys simple-sub-map)))
+)
 
 (defn process-word-simple-sub [words num-passes]
     (if (= num-passes 0) words
         (recur (distinct (flatten (map word-simple-sub words))) (- num-passes 1))))
 
 (defn simple-subs [word-lists]
-    (map #(process-word-simple-sub % (count (first %))) word-lists))
+    (map word-simple-sub word-lists))
 
 (defn remove-accents [word-lists]
     (map (fn [words]
@@ -107,9 +108,7 @@
 (defn sentencfy [word-lists]
     (-> (flatten word-lists)
         (->> (clojure.string/join " "))
-        (clojure.string/split #"\s*\.\s*")
-    )
-)
+        (clojure.string/split #"\s*\.\s*")))
 
 (defn wordify [word-lists]
     (apply str (interpose ". " 
@@ -119,11 +118,11 @@
     (clojure.string/replace (clojure.string/replace s #"(?i)!1|1!|!one|one!", "!!")
                             #"(?i)!eleven|eleven!" "!!!"))
 
+
 (println (->> (line-seq (BufferedReader. *in*))
               (preprocess-punctuation)
               (split-words)
               (flatten)
-              (prepare-list)
               (simple-subs)
               (filter-choices)
               (remove-accents)
