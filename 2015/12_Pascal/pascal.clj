@@ -28,7 +28,7 @@
   (println "#define test_width  " (* num-rows 8))
   (println "#define test_height " (* num-rows 8))
   (println "static char test_bits[] = {")
-  (doall (map #(println (xbm-export-row % num-rows)) (take num-rows (pascal-triangle))))
+  (dorun (map #(println (xbm-export-row % num-rows)) (take num-rows (pascal-triangle))))
   (println "};"))
 
 (xbm-export (Integer/valueOf (first *command-line-args*)))
