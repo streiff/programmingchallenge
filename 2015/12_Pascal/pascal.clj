@@ -1,14 +1,9 @@
-(defn calc-next-row [previous-row]
-  (if previous-row
-    (map #(+ (bigint %1) (bigint %2)) (cons 0 previous-row) (concat previous-row '(0)))
-    '[1]))
+(defn pascal-triangle-next-row [curr-row]
+  (map #(+' %1 %2) (cons 0 curr-row) (concat curr-row '(0))))
 
-(defn calc-pascal
-  ([number-of-rows] (calc-pascal number-of-rows '[]))
-  ([number-of-rows rows]
-    (if (== number-of-rows 0)
-      rows
-      (recur (dec number-of-rows) (concat rows (vector (calc-next-row (last rows))))))))
+(defn pascal-triangle
+  ([] (pascal-triangle '(1)))
+  ([n] (lazy-seq (cons n (pascal-triangle (pascal-triangle-next-row n))))))
 
 (defn xbm-export-line [pascal-row padding-str stilted bits]
   (let [raw-bytes (str padding-str
@@ -21,21 +16,19 @@
 (defn xbm-export-row [pascal-row pascal-rows-size]
   (let [padding (- pascal-rows-size (count pascal-row))
         padding-str (apply str (repeat padding "0"))
-        stilted (== (mod padding 2) 1)
+        stilted (odd? padding)
         bits (if stilted 
                 '("81" "81" "C3" "C3" "E7" "E7" "FF" "FF")
                 '("18" "18" "3C" "3C" "7E" "7E" "FF" "FF"))
         all-bytes (clojure.string/join "\n" (map #(xbm-export-line pascal-row padding-str stilted %) bits))]
     (clojure.string/replace all-bytes #"(..)" "0x$1, ")))
 
-(defn xbm-export [pascal-rows]
-  (let [pascal-rows-size (count pascal-rows)]
-    (str "#define test_width  " (* pascal-rows-size 8) "\n"
-         "#define test_height " (* pascal-rows-size 8) "\n"
-         "static char test_bits[] = {\n"
-         (clojure.string/replace 
-             (clojure.string/join "\n" (map #(xbm-export-row % pascal-rows-size) pascal-rows))
-             #", $", "")
-         "};\n")))
+ 
+(defn xbm-export [num-rows]
+  (println "#define test_width  " (* num-rows 8))
+  (println "#define test_height " (* num-rows 8))
+  (println "static char test_bits[] = {")
+  (doall (map #(println (xbm-export-row % num-rows)) (take num-rows (pascal-triangle))))
+  (println "};"))
 
-(println (xbm-export (calc-pascal(Integer/valueOf (first *command-line-args*)))))
+(xbm-export (Integer/valueOf (first *command-line-args*)))

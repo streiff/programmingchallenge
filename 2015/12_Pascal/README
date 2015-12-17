@@ -3,8 +3,7 @@ Pascal Triangle cool visualization
 
 Pascals Triangle can be used to approximate the Sierpinski triangle fractal
 when there are 2^n rows. This entry calculates the triangle to a given number
-of rows (it is really bad at managing the heap so be wary of anything over 1024
-rows) and uses that information to generate an XBM graphic file.
+of rows and uses that information to generate an XBM graphic file.
 
 Redirect the stdout to a file (e.g. pascal.xbm) and open up in your favourite
 image viewer program. I've included a sample of 64 rows.
